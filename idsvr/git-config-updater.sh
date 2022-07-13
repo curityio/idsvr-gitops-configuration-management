@@ -18,12 +18,12 @@ idsh <<< "show configuration | display xml" > /tmp/config-backup.xml
 echo '****** DEBUG FILE ******' >/tmp/debug
 
 #
-# Also get the last commit comment to include in the Git checkin
-# Avoid writing this when the server starts up
+# Use /opt/idsvr/bin/status techniques in the Helm config backup, which saves to the Kubernetes secrets API
+# Check server is healthy, to avoid an initial backup when the server starts
+# Also get the latest transaction ID and checkin comment if possible
 #
 
 #
 # I could use the GitHub API with a personal access token, but code would come out pretty complicated
-# Speak to Daniel to see if a Java plugin is possible?
 # https://stackoverflow.com/questions/68071992/how-to-commit-a-folder-and-open-a-pull-request-via-github-api
 #
