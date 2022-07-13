@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+
+  #
+  # A standalone instance of the Curity Identity Server
+  #
+  curity-idsvr:
+    image: curity.azurecr.io/curity/idsvr:7.2.0
+    ports:
+      - 6749:6749
+      - 8443:8443
+    volumes:
+      - ./license.json:/opt/idsvr/etc/init/license/license.json
+      - ./stage-configuration.xml:/opt/idsvr/etc/init/config.xml
+      - ./git-config-updater.sh:/opt/idsvr/usr/bin/post-commit-scripts/git-config-updater.sh
+    environment:
+      PASSWORD: 'Password1'
+      STAGE: "${STAGE}"
+      IDSVR_BASE_URL: "${IDSVR_BASE_URL}"
+      WEB_BASE_URL: "${WEB_BASE_URL}"
+      LOGGING_LEVEL: 'INFO'
