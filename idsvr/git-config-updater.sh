@@ -25,5 +25,6 @@ echo '****** DEBUG FILE ******' >/tmp/debug
 
 #
 # I could use the GitHub API with a personal access token, but code would come out pretty complicated
+# A plugin might therefore work better for this, and could be discussed
 # https://stackoverflow.com/questions/68071992/how-to-commit-a-folder-and-open-a-pull-request-via-github-api
 #
