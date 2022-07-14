@@ -35,7 +35,7 @@ if [ "$IS_READY" == 'true' -a "$IS_SERVING" == 'true' -a "$NODE_STATE" == 'RUNNI
   # Get the configuration as base64 and form a JSON payload
   #
   CONFIG_BACKUP_XML=$(idsvr -d | sed  '/<cluster>/,/<\/cluster>/d' | base64 -w 0)
-  REQUEST_CONTENT="[{\"id\": \"$TRANSACTION_ID\", \"message\": \"$COMMIT_MESSAGE\", \"data\": \"$CONFIG_BACKUP_XML\"}]"
+  REQUEST_CONTENT="{\"id\": \"$TRANSACTION_ID\", \"message\": \"$COMMIT_MESSAGE\", \"data\": \"$CONFIG_BACKUP_XML\"}"
   echo "$REQUEST_CONTENT" > /tmp/pull-request-content.txt
 
   #

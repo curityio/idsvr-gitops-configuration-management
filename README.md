@@ -1,6 +1,6 @@
-# Automated Configuration Management
+# GitOps Identity Server Configuration Management
 
-Demonstrates how to save configuration commits made in the Admin UI to a Git repository.
+Demonstrates a method to automate updates to a Git repo when Identity Server configuration changes.
 
 ## Prerequisites
 
@@ -12,6 +12,7 @@ Also copy a `license.json` file for the Curity Identity Server to the `idsvr` fo
 Run the following command to deploy the Curity Identity Server with configuration for a Staging environment:
 
 ```bash
+./build.sh
 .deploy.sh STAGING
 ```
 
@@ -20,7 +21,12 @@ Run the following command to deploy the Curity Identity Server with configuratio
 Under `Profiles / Token Service / Clients`, edit the web-client.\
 Then commit changes and add a useful comment.
 
-## Git Automated Update
+## Post Commit Scripts
 
-The deployed `git-config-updater` script on the Admin node of the Identity Server is invoked.\
-This calls a configured Git repo to save changes and add a pull request.
+A `post-commit-trigger-pull-request.sh` script runs on the Admin node of the Identity Server.\
+This calls a utility API with a JSON payload to submit the latest changes and the Admin UI comment.
+
+## Git Integration API
+
+A small utility API does the work of creating a GitHub pull request.\
+This uses GitHub's REST API to create the necessary resources.

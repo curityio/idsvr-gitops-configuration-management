@@ -1,3 +1,2 @@
-Turn this into a Kotlin API that initiates the GitHub flow
-https://stackoverflow.com/questions/68071992/how-to-commit-a-folder-and-open-a-pull-request-via-github-api
+Implement the behaviour here:
 
