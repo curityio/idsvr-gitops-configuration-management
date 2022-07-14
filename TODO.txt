@@ -1,0 +1,7 @@
+1. Write HOWTO to ensure I'm on track
+
+2. Post on PME channel
+
+3. Finish API
+   Check basic credential
+   Get GitHub API calls working (probably tomorrow)

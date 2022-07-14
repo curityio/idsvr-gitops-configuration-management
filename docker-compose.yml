@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+
+  #
+  # A standalone instance of the Curity Identity Server
+  #
+  curity-idsvr:
+    hostname: identityserver-internal
+    image: custom_idsvr:7.2.0
+    ports:
+      - 6749:6749
+      - 8443:8443
+    volumes:
+      - ./idsvr/license.json:/opt/idsvr/etc/init/license/license.json
+      - ./idsvr/stage-configuration.xml:/opt/idsvr/etc/init/config.xml
+      - ./idsvr/post-commit-trigger-pull-request.sh:/opt/idsvr/usr/bin/post-commit-scripts/post-commit-trigger-pull-request.sh
+    environment:
+      PASSWORD: 'Password1'
+      STAGE: "${STAGE}"
+      IDSVR_BASE_URL: "${IDSVR_BASE_URL}"
+      WEB_BASE_URL: "${WEB_BASE_URL}"
+      LOGGING_LEVEL: 'INFO'
+
+  #
+  # A utility API used to create a GitHub pull request
+  #
+  git-integration-api:
+    hostname: api-internal
+    image: git-integration-api:1.0.0
+    ports:
+      - 3000:3000
+    environment:
+      STAGE: "${STAGE}"
