@@ -4,29 +4,32 @@ Demonstrates a method to automate updates to a Git repo when Identity Server con
 
 ## Prerequisites
 
-First ensure that Docker is installed.\
+Ensure that these tools are installed locally:
+
+- Java 11+
+- [Docker](https://www.docker.com/products/docker-desktop)
+- [jq](https://stedolan.github.io/jq/download/)
+
+
 Also copy a `license.json` file for the Curity Identity Server to the `idsvr` folder.
 
-## Deploy the System
+## Overview
 
-Run the following command to deploy the Curity Identity Server with configuration for a Staging environment:
+When configuration is saved in the Admin UI of the Curity Identity Server:
 
-```bash
-./build.sh
-.deploy.sh STAGING
-```
+![Admin UI Edit](doc/configuration-edit.png)
 
-## Run the Admin UI
+A pull request is automatically generated using a post commit script:
 
-Under `Profiles / Token Service / Clients`, edit the web-client.\
-Then commit changes and add a useful comment.
+![Pull Request](doc/pull-request.png)
 
-## Post Commit Scripts
+This GitOps process ensures that all configuration changes are reviewed, to ensure reliability.
 
-A `post-commit-trigger-pull-request.sh` script runs on the Admin node of the Identity Server.\
-This calls a utility API with a JSON payload to submit the latest changes and the Admin UI comment.
+## Tutorial
 
-## Git Integration API
+See the [GitOps Configuration Management](https://curity.io/resources/learn/gitops-configuration-management/) tutorial for a walkthrough.\
+This requires some technical setup to get the end-to-end solution working.
 
-A small utility API does the work of creating a GitHub pull request.\
-This uses GitHub's REST API to create the necessary resources.
+## Further Information
+
+Please visit [curity.io](https://curity.io/) for more information about the Curity Identity Server.
