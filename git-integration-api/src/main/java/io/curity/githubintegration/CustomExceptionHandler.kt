@@ -31,8 +31,9 @@ class CustomExceptionHandler: ExceptionHandler<Exception> {
         val mapper = ObjectMapper()
         val data = mapper.createObjectNode()
 
-        data.put("code", "problem_encountered")
-        data.put("message", caught?.message)
+        data.put("code", "server_error")
+        data.put("message", "Problem encountered in the Git Integration API")
+        println(caught?.message)
 
         response?.status(500)
         response?.header("content-type", "application/json")

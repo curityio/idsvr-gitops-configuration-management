@@ -39,4 +39,8 @@ class Configuration {
     fun getEnvironment(): String {
         return properties.getProperty("environment")
     }
+
+    fun getGitHubAccessToken(): String {
+        return properties.getProperty("githubAccessToken")
+    }
 }

@@ -1,15 +1,17 @@
 TODAY
 -----
-1. Secure configuration
-   Add a few notes on encryption and link to docs, then checkin
-   Mention to not use a public repo though
-   https://curity.io/docs/idsvr/latest/configuration-guide/encrypted-config.html
-
-2. Understand GitHub API limitations and permissions
+1. Understand GitHub API limitations and permissions
    Try to get a basic read only connection working from Kotlin to a private repo
    Update API config + article config
    Merge to main
    https://www.softwaretestinghelp.com/github-rest-api-tutorial/
+
+2. Secure configuration
+   Add a few notes on encryption and link to docs, then checkin
+   Mention to not use a public repo though
+   Update diagram to Git Integration API
+   Related articles
+   https://curity.io/docs/idsvr/latest/configuration-guide/encrypted-config.html
 
 3. Post on PME channel and say I still have some API work to do
 

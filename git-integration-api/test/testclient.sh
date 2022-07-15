@@ -16,7 +16,7 @@ BASIC_PASSWORD='idsvr-secret-1'
 #
 # Send the request content
 #
-REQUEST_CONTENT=$(cat ./request_content.json)
+REQUEST_CONTENT=$(cat ./example-request-content.json)
 curl -i -X POST http://localhost:3000/configuration/pull-requests \
 -u "$BASIC_USER_NAME:$BASIC_PASSWORD" \
 -H "accept: application/json" \

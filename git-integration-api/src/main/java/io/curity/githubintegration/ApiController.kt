@@ -35,18 +35,31 @@ class ApiController(private val configuration: Configuration) {
         val mapper = ObjectMapper()
         
         val body = request.body()
-        if (!body.isEmpty()) {
-            
-            val requestData = mapper.readValue(body, ObjectNode::class.java)
-            
-            val id = requestData.get("id").asText();
-            val message = requestData.get("message").asText();
-            val base64config = requestData.get("data").asText();
-            println("API successfully GIT details and will create a pull request")
+        if (body.isEmpty()) {
+            throw IllegalStateException("Invalid request data received")
         }
+            
+        val bodyData = mapper.readValue(body, ObjectNode::class.java)
         
+        val stage = getRequestField(bodyData, "stage")
+        val message = getRequestField(bodyData, "message")
+        val data = getRequestField(bodyData, "data")
+
+        val client = GitHubApiClient(configuration)
+        val info = client.createPullRequest(stage, message, data)
+
         val responseData = mapper.createObjectNode()
-        responseData.put("done", "DONE")
+        responseData.put("message", info)
         return responseData.toString()
+    }
+
+    fun getRequestField(body: ObjectNode, name: String): String {
+
+        val value = body.get(name)
+        if (value != null) {
+            return value.asText()
+        }
+
+        return ""
     }
 }

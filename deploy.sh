@@ -9,15 +9,17 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 #
 # Point to the GitHub account containing the repo used to store configuration
 #
-GITHUB_USER_ACCOUNT_NAME='gary-archer'
+if [ "$GITHUB_USER_ACCOUNT_NAME" == '' ]; then
+  echo 'Please supply a GITHUB_USER_ACCOUNT_NAME environment variable that points to your online repository'
+  exit
+fi
 
 #
 # This example accepts a stage of the deployment pipeline as a parameter
 #
-STAGE="$1"
 if [ "$STAGE" != 'DEV' -a "$STAGE" != 'STAGING' -a "$STAGE" != 'PRODUCTION' ]; then
-  echo 'Please supply a valid stage name (DEV or STAGING or PRODUCTION) as a script argument'
-  exit 1
+  echo 'Please supply a STAGE environment variable equal to DEV, STAGING or PRODUCTION'
+  exit
 fi
 STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
 
