@@ -8,6 +8,7 @@ TODAY
 2. Understand GitHub API limitations and permissions
    Try to get a basic read only connection working from Kotlin to a private repo
    Update API config + article config
+   Merge to main
    https://www.softwaretestinghelp.com/github-rest-api-tutorial/
 
 3. Post on PME channel and say I still have some API work to do
