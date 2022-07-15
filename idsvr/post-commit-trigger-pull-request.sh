@@ -24,30 +24,25 @@ IS_SERVING=$(echo "$STATUS" | grep 'isServing' | awk -F':' '/isServing/ {print $
 if [ "$IS_READY" == 'true' -a "$IS_SERVING" == 'true' ]; then
   
   #
-  # Get details of the last commit, which will be a value of the form # Comment: my commit message"
-  # USe regex groups to get the message part
+  # Use the identity server CLI to get the last commit details, in the form "# Comment: my commit message"
+  # Then use regex groups to get the actual commit message
   #
   COMMENT_LINE=$(idsh <<< "show commit changes" | grep "# Comment: ")
   COMMIT_MESSAGE=$(echo "$COMMENT_LINE" | sed -r "s/^# Comment: (.*)$/\1/i")
-  echo $COMMIT_MESSAGE
 
   #
-  # Get the configuration with the -D parameter to preserve environment variables
+  # Export the configuration with the -D parameter to preserve environment variables
+  # Also remove the cluster and license details, which should be supplied outside the configuration on the next deployment
   #
-  CONFIG_BACKUP_XML=$(idsvr -D | sed  '/<cluster>/,/<\/cluster>/d' | base64 -w 0)
+  CONFIG_BACKUP_XML=$(idsvr -D | sed  '/<cluster>/,/<\/cluster>/d' | sed '/<license-key>/,/<\/license-key>/d' | base64 -w 0)
 
   #
-  # Form a JSON payload
+  # Form a JSON payload with the stage of the deployment pipeline and the commit message
   #
-  REQUEST_CONTENT="{\"id\": \"$TRANSACTION_ID\", \"message\": \"$COMMIT_MESSAGE\", \"data\": \"$CONFIG_BACKUP_XML\"}"
+  REQUEST_CONTENT="{\"stage\": \"$STAGE\", \"message\": \"$COMMIT_MESSAGE\", \"data\": \"$CONFIG_BACKUP_XML\"}"
   
   #
-  # TODO - save this to API folder then remove the code
-  #
-  echo "$REQUEST_CONTENT" > /tmp/pull-request-content.txt
-
-  #
-  # Details for connecting to the utility API that will create the Git pull request
+  # Define details for connecting to the utility API that will create the Git pull request
   #
   BASIC_USER_NAME='idsvr'
   BASIC_PASSWORD='idsvr-secret-1'

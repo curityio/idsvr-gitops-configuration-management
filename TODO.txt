@@ -1,15 +1,24 @@
-1. Update script to get commit message
-   Perhaps get commit list as display xml / json
+TODAY
+-----
+1. Add a few notes on encryption and secure content to the doc
+   https://curity.io/docs/idsvr/latest/configuration-guide/encrypted-config.html
 
-2. Do the same edit as in the tutorial and save requyest.json
+2. Understand GitHub API limitations and permissions
+   Get a basic read only connection working from Kotlin and update API config + article
+   Update API README
+   Add basic credentials
+   Ensure that license is removed during 
+   https://www.softwaretestinghelp.com/github-rest-api-tutorial/
 
-3. Read up on encrypted config and adapt article
+3. Post on PME channel by end of day
 
-4. Post on PME channel
+4. Look at Michal's Nextjs work and send review comments
 
-5. Finish API
-   Check basic credential
+MONDAY
+------
+4. Finish API
+   Check basic credential in Kotlin filter
    Get GitHub API calls working (probably tomorrow)
 
-6. Replace the user account name in the deploy.sh script with a generic one
+5. Replace the user account name in the deploy.sh script with a generic one
    Reset repo to make it leaner
