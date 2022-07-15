@@ -1,21 +1,12 @@
 TODAY
 -----
-1. Understand GitHub API limitations and permissions
-   Try to get a basic read only connection working from Kotlin to a private repo
-   Update API config + article config
-   Merge to main
+1. Complete the API work
    https://www.softwaretestinghelp.com/github-rest-api-tutorial/
+   https://stackoverflow.com/questions/68071992/how-to-commit-a-folder-and-open-a-pull-request-via-github-api
 
-2. Secure configuration
-   Add a few notes on encryption and link to docs, then checkin
-   Mention to not use a public repo though
-   Update diagram to Git Integration API
-   Related articles
-   https://curity.io/docs/idsvr/latest/configuration-guide/encrypted-config.html
+2. Post on PME channel and say I still have some API work to do
 
-3. Post on PME channel and say I still have some API work to do
-
-4. Look at Michal's Nextjs work and send review comments
+3. Look at Michal's Nextjs work and send review comments
 
 MONDAY
 ------
