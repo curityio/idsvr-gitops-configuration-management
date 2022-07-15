@@ -1,16 +1,16 @@
 TODAY
 -----
-1. Add a few notes on encryption and secure content to the doc
+1. Secure configuration
+   Add a few notes on encryption and link to docs, then checkin
+   Mention to not use a public repo though
    https://curity.io/docs/idsvr/latest/configuration-guide/encrypted-config.html
 
 2. Understand GitHub API limitations and permissions
-   Get a basic read only connection working from Kotlin and update API config + article
-   Update API README
-   Add basic credentials
-   Ensure that license is removed during 
+   Try to get a basic read only connection working from Kotlin to a private repo
+   Update API config + article config
    https://www.softwaretestinghelp.com/github-rest-api-tutorial/
 
-3. Post on PME channel by end of day
+3. Post on PME channel and say I still have some API work to do
 
 4. Look at Michal's Nextjs work and send review comments
 
@@ -18,7 +18,7 @@ MONDAY
 ------
 4. Finish API
    Check basic credential in Kotlin filter
-   Get GitHub API calls working (probably tomorrow)
+   Get GitHub API calls fully working
 
 5. Replace the user account name in the deploy.sh script with a generic one
    Reset repo to make it leaner
