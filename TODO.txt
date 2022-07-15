@@ -1,0 +1,18 @@
+TODAY
+-----
+1. Complete the API work
+   https://www.softwaretestinghelp.com/github-rest-api-tutorial/
+   https://stackoverflow.com/questions/68071992/how-to-commit-a-folder-and-open-a-pull-request-via-github-api
+
+2. Post on PME channel and say I still have some API work to do
+
+3. Look at Michal's Nextjs work and send review comments
+
+MONDAY
+------
+4. Finish API
+   Check basic credential in Kotlin filter
+   Get GitHub API calls fully working
+
+5. Replace the user account name in the deploy.sh script with a generic one
+   Reset repo to make it leaner

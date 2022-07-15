@@ -1,0 +1,8 @@
+1. Call GitHub and use async await calls
+   Use async await
+   https://www.softwaretestinghelp.com/github-rest-api-tutorial/
+   https://stackoverflow.com/questions/68071992/how-to-commit-a-folder-and-open-a-pull-request-via-github-api
+
+2. Handle input correctly
+   Log using log framework and return 4xx errors
+   Check basic credential

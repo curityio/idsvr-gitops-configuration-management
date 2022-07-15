@@ -1,0 +1,4 @@
+{
+    "IDSVR_BASE_URL": "https://idsvr.example-dev.com",
+    "WEB_BASE_URL": "https://web.example-dev.com"
+}
