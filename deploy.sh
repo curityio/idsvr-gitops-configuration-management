@@ -7,44 +7,51 @@
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 #
-# This example accepts a stage of the deployment pipeline as a parametr
+# Point to your GitHub account name
+#
+GITHUB_USER_ACCOUNT_NAME='gary-archer'
+
+#
+# This example accepts a stage of the deployment pipeline as a parameter
 #
 STAGE="$1"
 if [ "$STAGE" != 'DEV' -a "$STAGE" != 'STAGING' -a "$STAGE" != 'PRODUCTION' ]; then
-  echo 'Please supply a valid stage name (DEV or STAGING or PRODUCTION) as a parameter, eg "deploy.sh STAGING"'
+  echo 'Please supply a valid stage name (DEV or STAGING or PRODUCTION) as a script argument'
   exit 1
 fi
+STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
 
 #
-# Set environment variables for this stage
+# Download configuration at deployment time from the GitOps configuration repository
 #
-if [ "$STAGE" == 'DEV' ]; then
-  
-  # The development environment
-  IDSVR_BASE_URL='https://login.example-dev.com'
-  WEB_BASE_URL='https://www.example-dev.com'
-
-elif [ "$STAGE" == 'STAGING' ]; then
-  
-  # The staging environment
-  IDSVR_BASE_URL='https://login.example-staging.com'
-  WEB_BASE_URL='https://www.example-staging.com'
-
-elif [ "$STAGE" == 'PRODUCTION' ]; then
-
-  # The production environment
-  STAGE='PRODUCTION'
-  IDSVR_BASE_URL='https://login.example.com'
-  WEB_BASE_URL='https://www.example.com'
-
+if [ -d ./resources/ ]; then
+  rm -rf resources
+fi
+git clone "https://github.com/$GITHUB_USER_ACCOUNT_NAME/idsvr-configuration-store" resources
+if [ $? -ne 0 ]; then
+  echo 'Problem encountered downloading the GitOps configuration'
+  exit
 fi
 
 #
-# Download the configuration for the environment
+# Make some sanity checks
 #
-STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
-STAGE_CONFIG_DOWNLOAD_URL="file:///$(pwd)/resources/stored-configuration/$STAGE_LOWER/parameterized-config-backup.xml"
-curl -s "$STAGE_CONFIG_DOWNLOAD_URL" > ./idsvr/stage-configuration.xml
+ENVIRONMENT_FILE="./resources/$STAGE_LOWER.json"
+if [ ! -f "$ENVIRONMENT_FILE" ]; then
+  echo 'Environment JSON file was not found in the downloaded data'
+  exit
+fi
+if [ ! -f "./resources/parameterized-config-backup.xml" ]; then
+  echo 'Identity Server configuration was not found in the downloaded data'
+  exit
+fi
+
+#
+# Read environment specific values
+#
+JSON=$(cat "$ENVIRONMENT_FILE")
+IDSVR_BASE_URL=$(echo "$JSON" | jq .IDSVR_BASE_URL)
+WEB_BASE_URL=$(echo "$JSON" | jq .WEB_BASE_URL)
 
 #
 # Export the variables to Docker Compose and deploy the system
