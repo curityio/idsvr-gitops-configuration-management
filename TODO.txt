@@ -1,7 +1,15 @@
-1. Write HOWTO to ensure I'm on track
+1. Update script to get commit message
+   Perhaps get commit list as display xml / json
 
-2. Post on PME channel
+2. Do the same edit as in the tutorial and save requyest.json
 
-3. Finish API
+3. Read up on encrypted config and adapt article
+
+4. Post on PME channel
+
+5. Finish API
    Check basic credential
    Get GitHub API calls working (probably tomorrow)
+
+6. Replace the user account name in the deploy.sh script with a generic one
+   Reset repo to make it leaner

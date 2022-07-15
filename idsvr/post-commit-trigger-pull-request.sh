@@ -12,30 +12,38 @@
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 #
-# First read status details, to avoid GIT configuration updates when the node is initializing configuration
+# First read status details, to avoid sending GIT pull requests when the node is starting up
 #
 STATUS=$(/opt/idsvr/bin/status)
 IS_READY=$(echo "$STATUS" | grep 'isReady' | awk -F':' '/isReady/ {print $2}')
 IS_SERVING=$(echo "$STATUS" | grep 'isServing' | awk -F':' '/isServing/ {print $2}')
-CONFIGURATION_STATE=$(echo "$STATUS" | grep 'configurationState' | awk -F':' '/configurationState/ {print $2}')
-NODE_STATE=$(echo "$STATUS" | grep 'nodeState' | awk -F':' '/nodeState/ {print $2}')
 
 #
 # If these conditions are true then there has been a configuration change
 #
-if [ "$IS_READY" == 'true' -a "$IS_SERVING" == 'true' -a "$NODE_STATE" == 'RUNNING' -a "$CONFIGURATION_STATE" == 'CONFIGURED' ]; then
+if [ "$IS_READY" == 'true' -a "$IS_SERVING" == 'true' ]; then
   
   #
-  # Get details of the last commit
+  # Get details of the last commit, which will be a value of the form # Comment: my commit message"
+  # USe regex groups to get the message part
   #
-  TRANSACTION_ID=$(echo "$STATUS" | grep 'transactionId' | awk -F':' '/transactionId/ {print $2}')
-  COMMIT_MESSAGE='my commit'
+  COMMENT_LINE=$(idsh <<< "show commit changes" | grep "# Comment: ")
+  COMMIT_MESSAGE=$(echo "$COMMENT_LINE" | sed -r "s/^# Comment: (.*)$/\1/i")
+  echo $COMMIT_MESSAGE
 
   #
-  # Get the configuration as base64 and form a JSON payload
+  # Get the configuration with the -D parameter to preserve environment variables
   #
-  CONFIG_BACKUP_XML=$(idsvr -d | sed  '/<cluster>/,/<\/cluster>/d' | base64 -w 0)
+  CONFIG_BACKUP_XML=$(idsvr -D | sed  '/<cluster>/,/<\/cluster>/d' | base64 -w 0)
+
+  #
+  # Form a JSON payload
+  #
   REQUEST_CONTENT="{\"id\": \"$TRANSACTION_ID\", \"message\": \"$COMMIT_MESSAGE\", \"data\": \"$CONFIG_BACKUP_XML\"}"
+  
+  #
+  # TODO - save this to API folder then remove the code
+  #
   echo "$REQUEST_CONTENT" > /tmp/pull-request-content.txt
 
   #
@@ -55,7 +63,7 @@ if [ "$IS_READY" == 'true' -a "$IS_SERVING" == 'true' -a "$NODE_STATE" == 'RUNNI
   -d "$REQUEST_CONTENT"
 
   #
-  # In a production setup, use the openssl tool to send the request over an SSL connection
+  # In a production setup, openssl can send the request over an SSL connection, and Mutual TLS can be used
   #
 #  openssl 2>&1 s_client -CAfile $CA_CERT -quiet -connect api-internal:7443 <<EOF
 #POST /configuration/pull-requests HTTP/1.1

@@ -12,7 +12,7 @@ services:
       - 8443:8443
     volumes:
       - ./idsvr/license.json:/opt/idsvr/etc/init/license/license.json
-      - ./idsvr/parameterized-config-backup.xml:/opt/idsvr/etc/init/config.xml
+      - ./resources/parameterized-config-backup.xml:/opt/idsvr/etc/init/config.xml
       - ./idsvr/post-commit-trigger-pull-request.sh:/opt/idsvr/usr/bin/post-commit-scripts/post-commit-trigger-pull-request.sh
     environment:
       PASSWORD: 'Password1'
