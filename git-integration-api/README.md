@@ -10,7 +10,8 @@ This request is triggered from a post commit hook in the Curity Identity Server:
 ```json
 {
   "stage": "DEV",
-  "message": "My configuration edit message typed into the Admin UI"
+  "message": "My configuration edit message typed into the Admin UI",
+  "data": "PGNvbmZpZyB4bWxucz ..."
 }
 ```
 

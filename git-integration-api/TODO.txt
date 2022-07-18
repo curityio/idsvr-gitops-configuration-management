@@ -1,8 +1,15 @@
 GITHUB DIFFs
 ------------
 These are not very human-readable currently
+Update the example-request-content.json from a deployed system
 Try creating my own encryption key
 Later I may need to split the config into sections
+
+DOC
+---
+Revisit the article and update the message a little
+Say that this is just one example of saving to GitHub
+Update screenshots in READMEs and the article
 
 POLISH
 ------
@@ -15,7 +22,3 @@ Compare with OAuth Agent
 Inject configuration into controller using a @Configuration annotation
 Check basic credential in Kotlin filter
 
-DOC
----
-Revisit the article and update the message a little
-Say that this is just one example of saving to GitHub
