@@ -1,7 +1,8 @@
-GitHub Work
------------
-Start from scratch and see what checkin differences I get with the deployed system
-Update the example-request-content.json file
+GITHUB DIFFs
+------------
+These are not very human-readable currently
+Try creating my own encryption key
+Later I may need to split the config into sections
 
 POLISH
 ------

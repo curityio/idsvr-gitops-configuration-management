@@ -21,7 +21,7 @@ cd ..
 # Build the utility API
 #
 cd git-integration-api
-./gradlew build
+./gradlew bootJar
 if [ $? -ne 0 ]; then
   echo 'Problem encountered building the Git Integration API code'
   exit

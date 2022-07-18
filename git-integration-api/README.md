@@ -1,29 +1,23 @@
 # A Kotlin API to call GitHub APIs
 
-A utility API with some code to create a GitHub pull request with changed configuration data.\
-This involves a few technical steps, summarized below. 
+A utility API with some code to create a GitHub pull request with changed configuration data.
 
-## Interface
+## API Interface
 
-## Create a Commit
+The API is called at `POST /configuration/pull-requests with a payload of this form.\
+This request is triggered from a post commit hook in the Curity Identity Server:
 
-## Create a Branch
+```json
+{
+  "stage": "DEV",
+  "message": "My configuration edit message typed into the Admin UI"
+}
+```
 
-## Create a Pull Request
+## GitHub Work
 
-override fun handle(caught: Exception?, request: Request?, response: Response?) {
+The API's GitHubClient class then performs these steps:
 
-        println("API problem encountered")
-        caught?.printStackTrace();
-
-        val mapper = ObjectMapper()
-        val data = mapper.createObjectNode()
-
-        data.put("code", "server_error")
-        data.put("message", "Problem encountered in the Git Integration API")
-        println(caught?.message)
-
-        response?.status(500)
-        response?.header("content-type", "application/json")
-        response?.body(data.toString())
-    }
+- Creates a branch
+- Commits the configuration XML on that branch
+- Creates a pull request to merge to the main branch
