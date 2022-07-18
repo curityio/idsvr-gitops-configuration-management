@@ -32,14 +32,6 @@ class Configuration {
         }
     }
 
-    fun getPortNumber(): Int {
-        return properties.getProperty("port").toInt()
-    }
-
-    fun getEnvironment(): String {
-        return properties.getProperty("environment")
-    }
-
     fun getGitHubBaseUrl(): String {
         return properties.getProperty("githubBaseUrl")
     }

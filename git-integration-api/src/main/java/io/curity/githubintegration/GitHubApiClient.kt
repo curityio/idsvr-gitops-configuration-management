@@ -16,9 +16,6 @@
 
 package io.curity.githubintegration
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
-import kotlinx.coroutines.future.await
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -27,67 +24,146 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Locale
+import kotlinx.coroutines.future.await
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 
 /*
- * A facade for calling GitHub with some basic operations
+ * A facade for calling GitHub with some example operations
  */
 class GitHubApiClient(private val configuration: Configuration) {
 
     private val repoBaseUrl = "${configuration.getGitHubBaseUrl()}/repos/${configuration.getGitHubUserAccount()}/${configuration.getGitHubRepositoryName()}"
+    private val mainBranchName = "main"
 
     /*
      * The entry point for creating a pull request
      */
-    suspend fun createPullRequest(stage: String, message: String, data: String): String {
-        
-        createBranch(stage, message)
+    suspend fun createAutomatedPullRequest(stage: String, message: String, data: String): String {
 
-        println("API created GitHub pull request for $stage commit: $message")
-        return "API created GitHub pull request for $stage commit: $message"
+        // Create the branch
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").withZone(ZoneId.from(ZoneOffset.UTC));
+        val formattedTime = formatter.format(Instant.now())
+        val branchName = "${stage.lowercase(Locale.getDefault())}-configuration-update-$formattedTime"
+
+        // Do the GitHub work
+        createBranch(branchName)
+        commitConfigurationChanges(branchName, message, data)
+        val pullRequestUrl = createPullRequest(branchName, message)
+
+        // Log and return some info
+        val info = "API successfully created GitHub pull request: $pullRequestUrl"
+        println(info)
+        return info
     }
 
     /*
-     * First create a branch where the configuration update will be saved
+     * Create a branch where the configuration update will be saved
      */
-    private suspend fun createBranch(stage: String, message: String) {
+    private suspend fun createBranch(branchName: String) {
 
         // Get the latest commit on the main branch
-        val getLatestCommitResponse = callApi("GET", "/commits/main", null)
-        val commitSha = readResponseStringField(getLatestCommitResponse,"sha")
+        val getLatestCommitResponse = callApi("GET", "$repoBaseUrl/commits/$mainBranchName", null)
+        val currentHead = readResponseStringField(getLatestCommitResponse,"sha")
 
-        // Create a new branch for the current date
-        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").withZone(ZoneId.from(ZoneOffset.UTC));
-        val formattedTime = formatter.format(Instant.now())
-        val branchName = "$stage-configuration-update-$formattedTime)"
+        // Create a branch from this commit
         val mapper = ObjectMapper()
         val createBranchRequest = mapper.createObjectNode()
         createBranchRequest.put("ref", "refs/heads/$branchName")
-        createBranchRequest.put("sha", commitSha)
-        val createBranchResponse = callApi("POST", "/git/refs", createBranchRequest.toString())
+        createBranchRequest.put("sha", currentHead)
+        callApi("POST", "$repoBaseUrl/git/refs", createBranchRequest.toString())
     }
 
     /*
-     * First create a branch for the pull request
+     * Commit changes to the branch, which is quite complicated with the GitHub API and explained here:
+     * https://www.levibotelho.com/development/commit-a-file-with-the-github-api/
      */
-    private suspend fun saveConfigurationToBranch() {
+    private suspend fun commitConfigurationChanges(branchName: String, message: String, data: String) {
+
+        // Step 1: Get the current head on the branch
+        val getCurrentHeadResponse = callApi("GET", "$repoBaseUrl/git/ref/heads/$branchName", null)
+        val currentHeadObjectNode = readResponseObjectField(getCurrentHeadResponse, "object")
+        val currentHeadUrl = readResponseStringField(currentHeadObjectNode, "url")
+
+        // Step 2: Get the current commit that head points to
+        val getCurrentCommitResponse = callApi("GET", currentHeadUrl, null)
+        val lastCommitSha = readResponseStringField(getCurrentCommitResponse,"sha")
+        val lastCommitTreeNode = readResponseObjectField(getCurrentCommitResponse, "tree")
+        val lastCommitTreeUrl = readResponseStringField(lastCommitTreeNode,"url")
+
+        // Step 3. Create a blob containing a base 64 representation of the Curity Identity Server configuration
+        val mapper = ObjectMapper()
+        val createBlobPayload = mapper.createObjectNode()
+        createBlobPayload.put("content", data)
+        createBlobPayload.put("encoding", "base64")
+        val createBlobResponse = callApi("POST", "$repoBaseUrl/git/blobs", createBlobPayload.toString())
+        val blobSha = readResponseStringField(createBlobResponse, "sha")
+
+        // Step 4: Get the tree sha of the last commit
+        val getTreeResponse = callApi("GET", lastCommitTreeUrl, null)
+        val treeSha = readResponseStringField(getTreeResponse,"sha")
+
+        // Step 5a: Create a new tree with the files to update
+        val createTreePayload = mapper.createObjectNode()
+        val filesToUpdate = mapper.createArrayNode()
+        val fileToUpdate = mapper.createObjectNode()
+        fileToUpdate.put("path", "parameterized-config-backup.xml")
+        fileToUpdate.put("mode", "100644")
+        fileToUpdate.put("type", "blob")
+        fileToUpdate.put("sha", blobSha)
+        filesToUpdate.add(fileToUpdate)
+        createTreePayload.put("base_tree", treeSha)
+        createTreePayload.set<ArrayNode>("tree", filesToUpdate)
+        val createTreeResponse = callApi("POST","$repoBaseUrl/git/trees", createTreePayload.toString())
+        val newTreeSha = readResponseStringField(createTreeResponse,"sha")
+
+        // Step 6: Create a commit for the tree
+        val createCommitPayload = mapper.createObjectNode()
+        createCommitPayload.put("message", message)
+        val parents = mapper.createArrayNode()
+        parents.add(lastCommitSha)
+        createCommitPayload.set<ArrayNode>("parents", parents)
+        createCommitPayload.put("tree", newTreeSha)
+        val createCommitResponse = callApi("POST","$repoBaseUrl/git/commits", createCommitPayload.toString())
+        val commitSha =  readResponseStringField(createCommitResponse, "sha")
+
+        // Step 7: Update HEAD on the branch to point to the commit
+        val updateHeadPayload = mapper.createObjectNode()
+        updateHeadPayload.put("sha", commitSha)
+        updateHeadPayload.put("force", true)
+        callApi("POST","$repoBaseUrl/git/refs/heads/$branchName", updateHeadPayload.toString())
+    }
+
+    /*
+     * Create a pull request to commit the branch to the main branch and return its URL
+     */
+    private suspend fun createPullRequest(branchName: String, message: String): String {
+
+        val mapper = ObjectMapper()
+        val pullRequestPayload = mapper.createObjectNode()
+        pullRequestPayload.put("title", message)
+        pullRequestPayload.put("head", branchName)
+        pullRequestPayload.put("base", mainBranchName)
+        val pullRequestResponse = callApi("POST","$repoBaseUrl/pulls", pullRequestPayload.toString())
+        return readResponseStringField(pullRequestResponse, "html_url")
     }
 
     /*
      * Do the work of calling the API with the Java 11+ async HTTP Client
      */
-    private suspend fun callApi(method: String, path: String, data: String?): ObjectNode
+    private suspend fun callApi(method: String, operationUrl: String, data: String?): ObjectNode
     {
-        val operationUrl = "$repoBaseUrl$path"
-
         var bodyPublisher = HttpRequest.BodyPublishers.noBody()
         if (data != null) {
             bodyPublisher = HttpRequest.BodyPublishers.ofString(data)
         }
 
-        println("*** CALLING $operationUrl")
         val requestBuilder = HttpRequest.newBuilder()
             .method(method, bodyPublisher)
             .uri(URI(operationUrl))
+            .headers("Accept", "application/vnd.github+json")
             .headers("Authorization", "Bearer ${configuration.getGitHubAccessToken()}")
 
         val request = requestBuilder.build()
@@ -117,13 +193,19 @@ class GitHubApiClient(private val configuration: Configuration) {
             throw RuntimeException("GitHub returned status code 400 or above")
         }
 
-        println("*** SUCCESS RESPONSE RECEIVED")
-        println(response.body())
         return ObjectMapper().readValue(response.body(), ObjectNode::class.java)
     }
 
     /*
-     * Safely read a string from the response
+     * Safely read an object node string from a GitHub response
+     */
+    private fun readResponseObjectField(data: ObjectNode, fieldName: String): ObjectNode {
+
+        return data.get(fieldName) as ObjectNode
+    }
+
+    /*
+     * Safely read a string from a GitHub response
      */
     private fun readResponseStringField(data: ObjectNode, fieldName: String): String {
 

@@ -42,7 +42,7 @@ class ApiController {
         }
             
         val client = GitHubApiClient(configuration)
-        val info = client.createPullRequest(body.stage, body.message, body.data)
+        val info = client.createAutomatedPullRequest(body.stage, body.message, body.data)
 
         val mapper = ObjectMapper()
         val responseData = mapper.createObjectNode()
