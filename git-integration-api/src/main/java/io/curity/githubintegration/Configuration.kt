@@ -19,14 +19,14 @@ package io.curity.githubintegration
 import java.util.Properties
 
 /*
- * A simple configuration class that reads the api.properties file
+ * A simple configuration class that reads the application.properties file
  */
 class Configuration {
 
     private val properties = Properties()
 
     init {
-        val inputStream = this.javaClass.getResourceAsStream("/api.properties")
+        val inputStream = this.javaClass.getResourceAsStream("/application.properties")
         inputStream.use {
             properties.load(inputStream)
         }
@@ -40,7 +40,19 @@ class Configuration {
         return properties.getProperty("environment")
     }
 
+    fun getGitHubBaseUrl(): String {
+        return properties.getProperty("githubBaseUrl")
+    }
+
+    fun getGitHubUserAccount(): String {
+        return properties.getProperty("githubUserAccount")
+    }
+
     fun getGitHubAccessToken(): String {
         return properties.getProperty("githubAccessToken")
+    }
+
+    fun getGitHubRepositoryName(): String {
+        return properties.getProperty("githubRepositoryName")
     }
 }

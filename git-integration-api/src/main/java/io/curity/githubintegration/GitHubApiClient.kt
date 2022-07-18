@@ -16,14 +16,66 @@
 
 package io.curity.githubintegration
 
+import kotlinx.coroutines.future.await
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 class GitHubApiClient(private val configuration: Configuration) {
 
-    @Suppress("UNUSED_PARAMETER")
-    fun createPullRequest(stage: String, message: String, data: String): String {
+    /*
+     * The entry point for creating a pull request
+     */
+    suspend fun createPullRequest(stage: String, message: String, data: String): String {
         
-        // TODO: use API commands as described here:
-        // https://www.softwaretestinghelp.com/github-rest-api-tutorial/
+        println("API created GitHub pull request for $stage commit: $message")
+        val result = callApi("GET", "https://www.google.co.uk")
+        println("RECEIVED RESPONSE")
 
         return "API created GitHub pull request for $stage commit: $message"
+    }
+
+    // TODO: use API commands as described here:
+    // https://www.softwaretestinghelp.com/github-rest-api-tutorial/
+
+    /*
+     * Do the work of calling the API with the Java 11+ async HTTP Client
+     */
+    private suspend fun callApi(method: String, url: String): String
+    {
+        // val operationUrl = "${configuration.getGitHubBaseUrl()}/$path"
+
+        val requestBuilder = HttpRequest.newBuilder()
+            .method(method, HttpRequest.BodyPublishers.noBody())
+            .uri(URI(url))
+            .headers("Authorization", String.format("Bearer %s", configuration.getGitHubAccessToken()))
+
+        val request = requestBuilder.build()
+        val client = HttpClient.newBuilder()
+            .build()
+
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).handle(this::processResponse).await()
+    }
+
+    /*
+     * Handle the response and any response errors
+     */
+    private fun processResponse(response: HttpResponse<String>?, ex: Throwable?): String {
+
+        if (ex != null) {
+            ex.printStackTrace()
+            throw RuntimeException(ex)
+        }
+
+        if (response == null) {
+            throw RuntimeException("Connection error calling GitHub")
+        }
+
+        if (response.statusCode() > 400) {
+            throw RuntimeException("GitHub returned status code 400 or above")
+        }
+
+        return response.body()
     }
 }

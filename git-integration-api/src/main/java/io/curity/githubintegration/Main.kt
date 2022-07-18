@@ -16,24 +16,16 @@
  
 package io.curity.githubintegration
 
-import spark.Spark.before
-import spark.Spark.exception
-import spark.Spark.port
-import spark.Spark.post
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+
+@SpringBootApplication
+open class DemoApplication
 
 /*
- * An API to integrate with GitHub via its API
+ * The entry point method
  */
-fun main() {
-
-    // Create global objects at startup
-    val configuration = Configuration()
-    val controller = ApiController(configuration)
-
-    port(configuration.getPortNumber())
-
-    post("/configuration/pull-requests", controller::createPullRequest)
-
-    before({ _, response -> response.type("application/json") })
-    exception(Exception::class.java, CustomExceptionHandler())
+fun main(args: Array<String>) {
+    runApplication<DemoApplication>(*args)
 }
+
