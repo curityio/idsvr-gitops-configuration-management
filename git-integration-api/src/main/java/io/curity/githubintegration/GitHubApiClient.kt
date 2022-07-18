@@ -16,40 +16,79 @@
 
 package io.curity.githubintegration
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import kotlinx.coroutines.future.await
 import java.net.URI
 import java.net.http.HttpClient
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
+/*
+ * A facade for calling GitHub with some basic operations
+ */
 class GitHubApiClient(private val configuration: Configuration) {
+
+    private val repoBaseUrl = "${configuration.getGitHubBaseUrl()}/repos/${configuration.getGitHubUserAccount()}/${configuration.getGitHubRepositoryName()}"
 
     /*
      * The entry point for creating a pull request
      */
     suspend fun createPullRequest(stage: String, message: String, data: String): String {
         
-        println("API created GitHub pull request for $stage commit: $message")
-        val result = callApi("GET", "https://www.google.co.uk")
-        println("RECEIVED RESPONSE")
+        createBranch(stage, message)
 
+        println("API created GitHub pull request for $stage commit: $message")
         return "API created GitHub pull request for $stage commit: $message"
     }
 
-    // TODO: use API commands as described here:
-    // https://www.softwaretestinghelp.com/github-rest-api-tutorial/
+    /*
+     * First create a branch where the configuration update will be saved
+     */
+    private suspend fun createBranch(stage: String, message: String) {
+
+        // Get the latest commit on the main branch
+        val getLatestCommitResponse = callApi("GET", "/commits/main", null)
+        val commitSha = readResponseStringField(getLatestCommitResponse,"sha")
+
+        // Create a new branch for the current date
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").withZone(ZoneId.from(ZoneOffset.UTC));
+        val formattedTime = formatter.format(Instant.now())
+        val branchName = "$stage-configuration-update-$formattedTime)"
+        val mapper = ObjectMapper()
+        val createBranchRequest = mapper.createObjectNode()
+        createBranchRequest.put("ref", "refs/heads/$branchName")
+        createBranchRequest.put("sha", commitSha)
+        val createBranchResponse = callApi("POST", "/git/refs", createBranchRequest.toString())
+    }
+
+    /*
+     * First create a branch for the pull request
+     */
+    private suspend fun saveConfigurationToBranch() {
+    }
 
     /*
      * Do the work of calling the API with the Java 11+ async HTTP Client
      */
-    private suspend fun callApi(method: String, url: String): String
+    private suspend fun callApi(method: String, path: String, data: String?): ObjectNode
     {
-        // val operationUrl = "${configuration.getGitHubBaseUrl()}/$path"
+        val operationUrl = "$repoBaseUrl$path"
 
+        var bodyPublisher = HttpRequest.BodyPublishers.noBody()
+        if (data != null) {
+            bodyPublisher = HttpRequest.BodyPublishers.ofString(data)
+        }
+
+        println("*** CALLING $operationUrl")
         val requestBuilder = HttpRequest.newBuilder()
-            .method(method, HttpRequest.BodyPublishers.noBody())
-            .uri(URI(url))
-            .headers("Authorization", String.format("Bearer %s", configuration.getGitHubAccessToken()))
+            .method(method, bodyPublisher)
+            .uri(URI(operationUrl))
+            .headers("Authorization", "Bearer ${configuration.getGitHubAccessToken()}")
 
         val request = requestBuilder.build()
         val client = HttpClient.newBuilder()
@@ -61,7 +100,7 @@ class GitHubApiClient(private val configuration: Configuration) {
     /*
      * Handle the response and any response errors
      */
-    private fun processResponse(response: HttpResponse<String>?, ex: Throwable?): String {
+    private fun processResponse(response: HttpResponse<String>?, ex: Throwable?): ObjectNode {
 
         if (ex != null) {
             ex.printStackTrace()
@@ -73,9 +112,22 @@ class GitHubApiClient(private val configuration: Configuration) {
         }
 
         if (response.statusCode() > 400) {
+            println("*** ERROR RESPONSE RECEIVED")
+            println(response.body())
             throw RuntimeException("GitHub returned status code 400 or above")
         }
 
-        return response.body()
+        println("*** SUCCESS RESPONSE RECEIVED")
+        println(response.body())
+        return ObjectMapper().readValue(response.body(), ObjectNode::class.java)
+    }
+
+    /*
+     * Safely read a string from the response
+     */
+    private fun readResponseStringField(data: ObjectNode, fieldName: String): String {
+
+        val node = data.get(fieldName) ?: throw RuntimeException("Missing response field for $fieldName")
+        return node.asText()
     }
 }

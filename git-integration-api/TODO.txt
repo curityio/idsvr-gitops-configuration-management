@@ -1,10 +1,30 @@
-1. Step 1 - get an HTTP call working and base support with HttpClient
+DONE
+----
+Early Git Updates
 
-Call GitHub and use async await calls
-   Use async await and Java HTTP Client
-   https://www.softwaretestinghelp.com/github-rest-api-tutorial/
-   https://stackoverflow.com/questions/68071992/how-to-commit-a-folder-and-open-a-pull-request-via-github-api
+// Get latest commit on main
+{"sha":"9d08a17924cf1df1c44d803cdba844a3da010fb3","node_id":"C_kwDOHpv639oAKDlkMDhhMTc5MjRjZjFkZjFjNDRkODAzY2RiYTg0NGEzZGEwMTBmYjM","commit":{"author":{"name":"gary.archer","email":"gary.archer@WORKMAC.local","date":"2022-07-18T09:58:39Z"},"committer":{"name":"gary.archer","email":"gary.archer@WORKMAC.local","date":"2022-07-18T09:58:39Z"},"message":"Updates","tree":{"sha":"1330eba39f11660ff8c8915af4a6d2d648c5e40e","url":"https://api.github.com/repos/gary-archer/idsvr-configuration-store/git/trees/1330eba39f11660ff8c8915af4a6d2d648c5e40e"},"url":"https://api.github.com/repos/gary-archer/idsvr-configuration-store/git/commits/9d08a17924cf1df1c44d803cdba844a3da010fb3","comment_count":0,"verification":{"verified":false,"reason":"unsigned","signature":null,"payload":null}},"url":"https://api.github.com/repos/gary-archer/idsvr-configuration-store/commits/9d08a17924cf1df1c44d803cdba844a3da010fb3","html_url":"https://github.com/gary-archer/idsvr-configuration-store/commit/9d08a17924cf1df1c44d803cdba844a3da010fb3","comments_url":"https://api.github.com/repos/gary-archer/idsvr-configuration-store/commits/9d08a17924cf1df1c44d803cdba844a3da010fb3/comments","author":null,"committer":null,"parents":[{"sha":"b13111c883f7ae969ee6d3d3523e05f151f745b1","url":"https://api.github.com/repos/gary-archer/idsvr-configuration-store/commits/b13111c883f7ae969ee6d3d3523e05f151f745b1","html_url":"https://github.com/gary-archer/idsvr-configuration-store/commit/b13111c883f7ae969ee6d3d3523e05f151f745b1"}],"stats":{"total":1,"additions":1,"deletions":0},"files":[{"sha":"496ee2ca6a2f08396a4076fe43dedf3dc0da8b6d","filename":".gitignore","status":"modified","additions":1,"deletions":0,"changes":1,"blob_url":"https://github.com/gary-archer/idsvr-configuration-store/blob/9d08a17924cf1df1c44d803cdba844a3da010fb3/.gitignore","raw_url":"https://github.com/gary-archer/idsvr-configuration-store/raw/9d08a17924cf1df1c44d803cdba844a3da010fb3/.gitignore","contents_url":"https://api.github.com/repos/gary-archer/idsvr-configuration-store/contents/.gitignore?ref=9d08a17924cf1df1c44d803cdba844a3da010fb3","patch":"@@ -0,0 +1 @@\n+.DS_Store\n\\ No newline at end of file"}]}
 
-2. Handle input correctly
-   Log using log framework and return 4xx errors
-   Check basic credential
+// Create a branch
+{"ref":"refs/heads/DEV-configuration-update-20220718-110755)","node_id":"REF_kwDOHpv639oANHJlZnMvaGVhZHMvREVWLWNvbmZpZ3VyYXRpb24tdXBkYXRlLTIwMjIwNzE4LTExMDc1NSk","url":"https://api.github.com/repos/gary-archer/idsvr-configuration-store/git/refs/heads/DEV-configuration-update-20220718-110755)","object":{"sha":"9d08a17924cf1df1c44d803cdba844a3da010fb3","type":"commit","url":"https://api.github.com/repos/gary-archer/idsvr-configuration-store/git/commits/9d08a17924cf1df1c44d803cdba844a3da010fb3"}}
+
+NEXT
+----
+Commit a blob to the branch
+Create a pull request
+https://www.softwaretestinghelp.com/github-rest-api-tutorial/
+https://stackoverflow.com/questions/68071992/how-to-commit-a-folder-and-open-a-pull-request-via-github-api
+
+POLISH
+------
+Throw a custom exception
+Exception handler to catch it, then log and return the client response
+Wire it up in Spring Boot
+Handle input correctly and return a 400 for malformed requests
+Compare with OAuth Agent
+Inject configuration into controller using a @Configuration annotation
+
+DOC
+---
+Revisit the article and update the message a little
+Say that this is just one example of saving to GitHub
