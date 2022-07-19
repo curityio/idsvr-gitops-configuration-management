@@ -11,7 +11,7 @@ Ensure that these tools are installed locally:
 - [jq](https://stedolan.github.io/jq/download/)
 
 
-Also copy a `license.json` file for the Curity Identity Server to the `idsvr` folder.
+Also get a `license.json` file for the Curity Identity Server.
 
 ## Overview
 
@@ -23,7 +23,7 @@ A pull request is automatically generated using a post commit script:
 
 ![Pull Request](doc/pull-request.png)
 
-This GitOps process ensures that all configuration changes are reviewed, to ensure reliability.
+This enables a process where all configuration changes are reviewed, for best reliability.
 
 ## Tutorial
 
