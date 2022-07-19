@@ -7,6 +7,20 @@
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 #
+# Check for a license file
+#
+LICENSE_KEY_FILE_PATH=~/.curity/license.json
+if [ "$LICENSE_KEY_FILE_PATH" == '' ]; then
+  echo 'Please provide a license.json file in the idsvr folder in order to deploy the system'
+  exit
+fi
+LICENSE_KEY=$(cat "$LICENSE_KEY_FILE_PATH" | jq -r .License)
+if [ "$LICENSE_KEY" == 'null' ]; then
+  echo 'An invalid license JSON file was provided'
+  exit
+fi
+
+#
 # Point to the GitHub account containing the repo used to store configuration
 #
 if [ "$GITHUB_USER_ACCOUNT_NAME" == '' ]; then
@@ -22,14 +36,6 @@ if [ "$STAGE" != 'DEV' -a "$STAGE" != 'STAGING' -a "$STAGE" != 'PRODUCTION' ]; t
   exit
 fi
 STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
-
-#
-# Check for a license file
-#
-if [ ! -f './idsvr/license.json' ]; then
-  echo "Please provide a license.json file in the idsvr folder in order to deploy the system"
-  exit 1
-fi
 
 #
 # Download configuration at deployment time from the GitOps configuration repository
@@ -67,6 +73,7 @@ WEB_BASE_URL=$(echo "$JSON" | jq -r .WEB_BASE_URL)
 # Export the variables to Docker Compose and deploy the system
 #
 export STAGE
+export LICENSE_KEY
 export IDSVR_BASE_URL
 export WEB_BASE_URL
 cd idsvr

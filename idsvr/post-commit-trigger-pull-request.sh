@@ -34,13 +34,14 @@ if [ "$IS_READY" == 'true' -a "$IS_SERVING" == 'true' ]; then
   # Export the configuration with the -D parameter to preserve environment variables
   # Also remove the cluster and license details, which should be supplied outside the configuration on the next deployment
   #
-  CONFIG_BACKUP_XML=$(idsvr -D | sed  '/<cluster>/,/<\/cluster>/d' | sed '/<license-key>/,/<\/license-key>/d' | base64 -w 0)
-  cat "$CONFIG_BACKUP_XML" > /tmp/parameterized-config-backup.xml
+  CONFIG_BACKUP_XML=$(idsvr -D | sed  '/<cluster>/,/<\/cluster>/d')
+  CONFIG_BACKUP_BASE64=$(echo "$CONFIG_BACKUP_XML" | base64 -w 0)
+  echo "$CONFIG_BACKUP_XML" > /tmp/parameterized-config-backup.xml
   #
   # Form a JSON payload with the stage of the deployment pipeline and the commit message
   #
-  REQUEST_CONTENT="{\"stage\": \"$STAGE\", \"message\": \"$COMMIT_MESSAGE\", \"data\": \"$CONFIG_BACKUP_XML\"}"
-  cat "$REQUEST_CONTENT" > /tmp/example_request_content.json
+  REQUEST_CONTENT="{\"stage\": \"$STAGE\", \"message\": \"$COMMIT_MESSAGE\", \"data\": \"$CONFIG_BACKUP_BASE64\"}"
+  echo "$REQUEST_CONTENT" > /tmp/example_request_content.json
 
   #
   # Define details for connecting to the utility API that will create the Git pull request
