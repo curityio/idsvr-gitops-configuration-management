@@ -17,11 +17,13 @@
 package io.curity.githubintegration
 
 import java.util.Properties
+import org.springframework.context.annotation.Configuration
 
 /*
  * A simple configuration class that reads the application.properties file
  */
-class Configuration {
+@Configuration
+open class Configuration {
 
     private val properties = Properties()
 

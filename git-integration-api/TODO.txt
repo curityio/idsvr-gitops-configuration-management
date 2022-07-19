@@ -1,31 +1,15 @@
-1. Get updated config-backup.xnl and example-request-content.json from Docker
-   LICENSE_KEY as a variable, extracted from file path
-   Delete existing PRs and branches
+AUTHORIZATION
+-------------
+Check basic credential in Kotlin filter
 
-2. Check diffs
-   Try with a consistent encryption key
-
-GITHUB DIFFs
-------------
-These are not very human-readable currently
-Later I may need to split the config into sections
-Speak to Nikos about any recommendations
+TESTING
+-------
+Run on my home mac station with a new Git repo
 
 DOC
 ---
 Revisit the article and update the message a little
+Use final diagrams
 Updates from PR comments
 Say that this is just one example of saving to GitHub
 Update screenshots in READMEs and the article
-
-POLISH
-------
-Write middleware related code
-Throw a custom exception
-Exception handler to catch it, then log and return the client response
-Wire it up in Spring Boot
-Handle input correctly and return a 400 for malformed requests
-Compare with OAuth Agent
-Inject configuration into controller using a @Configuration annotation
-Check basic credential in Kotlin filter
-

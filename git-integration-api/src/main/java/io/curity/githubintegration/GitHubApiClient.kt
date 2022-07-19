@@ -26,20 +26,32 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlinx.coroutines.future.await
+import org.slf4j.LoggerFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import io.curity.githubintegration.infrastructure.ApiError
 
 /*
- * A facade for calling GitHub with some example operations
+ * A facade for calling GitHub's REST API
  */
 class GitHubApiClient(private val configuration: Configuration) {
 
     private val repoBaseUrl = "${configuration.getGitHubBaseUrl()}/repos/${configuration.getGitHubUserAccount()}/${configuration.getGitHubRepositoryName()}"
     private val mainBranchName = "main"
 
+    init {
+
+        if (configuration.getGitHubBaseUrl().isNullOrBlank() ||
+            configuration.getGitHubUserAccount().isNullOrBlank() ||
+            configuration.getGitHubAccessToken().isNullOrBlank() ||
+            configuration.getGitHubRepositoryName().isNullOrBlank()) {
+            throw ApiError(500, "invalid_configuration", "The GitHub API configuration is incorrect in the api.properties file")
+        }
+    }
+
     /*
-     * The entry point for creating a pull request
+     * The entry point for commit changes to a branch and creating a pull request
      */
     suspend fun createAutomatedPullRequest(stage: String, message: String, data: String): String {
 
@@ -47,15 +59,17 @@ class GitHubApiClient(private val configuration: Configuration) {
         val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").withZone(ZoneId.from(ZoneOffset.UTC));
         val formattedTime = formatter.format(Instant.now())
         val branchName = "${stage.lowercase(Locale.getDefault())}-configuration-update-$formattedTime"
-
-        // Do the GitHub work
         createBranch(branchName)
+
+        // Do the GitHub work to commit changes to the branch
         commitConfigurationChanges(branchName, message, data)
+
+        // Finally create the pull request
         val pullRequestUrl = createPullRequest(branchName, message)
 
         // Log and return some info
         val info = "API successfully created GitHub pull request: $pullRequestUrl"
-        println(info)
+        LoggerFactory.getLogger(GitHubApiClient::class.java).info(info)
         return info
     }
 
@@ -178,19 +192,14 @@ class GitHubApiClient(private val configuration: Configuration) {
      */
     private fun processResponse(response: HttpResponse<String>?, ex: Throwable?): ObjectNode {
 
-        if (ex != null) {
-            ex.printStackTrace()
-            throw RuntimeException(ex)
-        }
-
-        if (response == null) {
-            throw RuntimeException("Connection error calling GitHub")
+        if (ex != null || response == null) {
+            throw ApiError(500, "github_connection_error", "Unable to connect to GitHub REST APIs", ex)
         }
 
         if (response.statusCode() > 400) {
-            println("*** ERROR RESPONSE RECEIVED")
-            println(response.body())
-            throw RuntimeException("GitHub returned status code 400 or above")
+            val error = ApiError(500, "github_error", "Problem encountered calling the GitHub REST API")
+            error.details = "Status: ${response.statusCode()}, Error: ${response.body()}"
+            throw error
         }
 
         return ObjectMapper().readValue(response.body(), ObjectNode::class.java)
@@ -209,7 +218,13 @@ class GitHubApiClient(private val configuration: Configuration) {
      */
     private fun readResponseStringField(data: ObjectNode, fieldName: String): String {
 
-        val node = data.get(fieldName) ?: throw RuntimeException("Missing response field for $fieldName")
+        val node = data.get(fieldName)
+        if (node == null) {
+            val error = ApiError(500, "github_response_error", "Missing response data when calling GitHub REST APIs")
+            error.details = "Missing response field for $fieldName"
+            throw error
+        }
+
         return node.asText()
     }
 }

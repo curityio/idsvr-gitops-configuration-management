@@ -16,7 +16,6 @@
  
 package io.curity.githubintegration
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -27,27 +26,16 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 @RequestMapping(value = ["configuration"])
-class ApiController {
-
-    private val configuration: Configuration = Configuration()
+class ApiController(private val configuration: Configuration) {
 
     /*
-     * Receive data from the Curity Identity Server, then call GitHub to trigger a pull request
+     * Receive data from the Identity Server, then call GitHub to trigger a pull request
      */
     @PostMapping(value = ["/pull-requests"])
-    suspend fun createPullRequest(@RequestBody(required = false) body: PullRequestInput?): String {
+    suspend fun createPullRequest(@RequestBody(required = true) body: PullRequestInput): PullRequestOutput {
 
-        if (body == null) {
-            throw IllegalStateException("Invalid request data received")
-        }
-            
         val client = GitHubApiClient(configuration)
         val info = client.createAutomatedPullRequest(body.stage, body.message, body.data)
-
-        val mapper = ObjectMapper()
-        val responseData = mapper.createObjectNode()
-        responseData.put("message", info)
-
-        return responseData.toString()
+        return PullRequestOutput(info)
     }
 }

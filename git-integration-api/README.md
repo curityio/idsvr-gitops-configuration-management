@@ -15,7 +15,34 @@ This request is triggered from a post commit hook in the Curity Identity Server:
 }
 ```
 
-## GitHub Work
+## Setup
+
+You need to create a GitHub repo for your user account.\
+Then update the `src/main/resources/api.properties` folder:
+
+```text
+server.port=3000
+githubBaseUrl=https://api.github.com
+githubUserAccount=
+githubAccessToken=
+githubRepositoryName=idsvr-configuration-store
+```
+
+## Run the API
+
+Execute the following command to run the Git Integration API locally:
+
+```bash
+./gradlew bootRun
+```
+
+Test it with this command:
+
+```bash
+./test/testclient.sh
+```
+
+## GitHub REST API Actions
 
 The API's GitHubClient class then performs these steps:
 
