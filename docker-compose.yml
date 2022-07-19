@@ -27,7 +27,5 @@ services:
   git-integration-api:
     hostname: api-internal
     image: git-integration-api:1.0.0
-    ports:
-      - 3000:3000
     environment:
       STAGE: "${STAGE}"

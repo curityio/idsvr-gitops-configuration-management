@@ -23,12 +23,16 @@ A pull request is automatically generated using a post commit script:
 
 ![Pull Request](doc/pull-request.png)
 
-This enables a process where all configuration changes are reviewed, for best reliability.
+Configuration secrets are kept encrypted and structure maintained, to ensure readable differences:
+
+![Pull Request Diffs](doc/pull-request-diffs.png)
+
+The end-to-end process ensures that changes can be reviewed, for best reliability.
 
 ## Tutorial
 
-See the [GitOps Configuration Management](https://curity.io/resources/learn/gitops-configuration-management/) tutorial for a walkthrough.\
-This requires some technical setup to get the end-to-end solution working.
+See the [GitOps Configuration Management](https://curity.io/resources/learn/idsvr-gitops-configuration-management) tutorial for a walkthrough.\
+With some technical setup you can run an end-to-end solution.
 
 ## Further Information
 
