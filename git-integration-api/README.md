@@ -4,7 +4,7 @@ A utility API with some code to create a GitHub pull request with changed config
 
 ## API Interface
 
-The API is called at `POST /configuration/pull-requests with a payload of this form.\
+The API is called at `POST /configuration/pull-requests` with a payload as follows.\
 This request is triggered from a post commit hook in the Curity Identity Server:
 
 ```json
@@ -22,6 +22,8 @@ Then update the `src/main/resources/api.properties` folder:
 
 ```text
 server.port=3000
+basicAuthenticationUserName=idsvr
+basicAuthenticationPassword=idsvr-secret-1
 githubBaseUrl=https://api.github.com
 githubUserAccount=
 githubAccessToken=

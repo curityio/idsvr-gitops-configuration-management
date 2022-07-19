@@ -16,27 +16,31 @@
 
 package io.curity.githubintegration.infrastructure
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.RestControllerAdvice
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import org.slf4j.LoggerFactory
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.web.AuthenticationEntryPoint
+import com.fasterxml.jackson.databind.ObjectMapper
 
-@RestControllerAdvice
-class ApiExceptionHandler {
+class AuthenticationFailedHandler: AuthenticationEntryPoint {
 
-    @ExceptionHandler
-    fun handleException(error: ApiError, response: HttpServletResponse) {
+    override fun commence(
+        request: HttpServletRequest?,
+        response: HttpServletResponse?,
+        authException: AuthenticationException?
+    ) {
+        response!!.addHeader("WWW-Authenticate", "Basic")
 
         val mapper = ObjectMapper()
         val clientErrorPayload = mapper.createObjectNode()
-        clientErrorPayload.put("code", error.errorCode)
-        clientErrorPayload.put("message", error.message)
+        clientErrorPayload.put("code", "authentication_failed")
+        clientErrorPayload.put("message", "Authentication failed due to missing or invalid credentials")
 
-        LoggerFactory.getLogger(ApiExceptionHandler::class.java).error(error.logInfo())
+        LoggerFactory.getLogger(AuthenticationFailedHandler::class.java).error("Authentication failed: ${authException?.message}")
 
         response.setHeader("Content-Type", "application/json")
-        response.status = error.statusCode
+        response.status = 401
         response.writer.write(clientErrorPayload.toString())
     }
 }

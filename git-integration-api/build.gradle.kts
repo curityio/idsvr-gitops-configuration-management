@@ -24,8 +24,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
 
     // The API uses Spring Boot
-    implementation("org.springframework.boot:spring-boot-starter:2.7.1")
     implementation("org.springframework.boot:spring-boot-starter-web:2.7.1")
+    implementation("org.springframework.security:spring-security-config:5.7.2")
+    implementation("org.springframework.security:spring-security-web:5.7.2")
 
     // JSON processing
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")

@@ -1,3 +1,0 @@
-1. Is use of IS_SERVING the correct condition to avoid a startup pull request?
-
-2. Will the post commit script only run on the admin node or do I need to take steps to ensure that?

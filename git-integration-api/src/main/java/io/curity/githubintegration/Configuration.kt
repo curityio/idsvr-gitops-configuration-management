@@ -34,6 +34,14 @@ open class Configuration {
         }
     }
 
+    fun getBasicAuthenticationUserName(): String {
+        return properties.getProperty("basicAuthenticationUserName")
+    }
+
+    fun getBasicAuthenticationPassword(): String {
+        return properties.getProperty("basicAuthenticationPassword")
+    }
+
     fun getGitHubBaseUrl(): String {
         return properties.getProperty("githubBaseUrl")
     }

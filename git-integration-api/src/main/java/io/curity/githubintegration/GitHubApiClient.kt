@@ -42,16 +42,16 @@ class GitHubApiClient(private val configuration: Configuration) {
 
     init {
 
-        if (configuration.getGitHubBaseUrl().isNullOrBlank() ||
-            configuration.getGitHubUserAccount().isNullOrBlank() ||
-            configuration.getGitHubAccessToken().isNullOrBlank() ||
-            configuration.getGitHubRepositoryName().isNullOrBlank()) {
+        if (configuration.getGitHubBaseUrl().isBlank() ||
+            configuration.getGitHubUserAccount().isBlank() ||
+            configuration.getGitHubAccessToken().isBlank() ||
+            configuration.getGitHubRepositoryName().isBlank()) {
             throw ApiError(500, "invalid_configuration", "The GitHub API configuration is incorrect in the api.properties file")
         }
     }
 
     /*
-     * The entry point for commit changes to a branch and creating a pull request
+     * The entry point to commit changes to a branch and create a pull request
      */
     suspend fun createAutomatedPullRequest(stage: String, message: String, data: String): String {
 
