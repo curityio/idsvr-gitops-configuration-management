@@ -1,0 +1,10 @@
+1. Use an async task and return 202
+   Handle exceptions on the thread
+
+2. Multiple configuration files deployed in docker-compose.yml
+   GitHub updates working
+   This is the main / risky work to do on the dev branch
+
+3. Add extra environment variables for secrets and keys
+   Introductory article on configuration management
+   

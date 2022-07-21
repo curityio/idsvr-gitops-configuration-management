@@ -55,17 +55,19 @@ class GitHubApiClient(private val configuration: Configuration) {
      */
     suspend fun createAutomatedPullRequest(stage: String, message: String, data: String): String {
 
+        val commitMessage = message.ifBlank { "Configuration update" }
+
         // Create the branch
-        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").withZone(ZoneId.from(ZoneOffset.UTC));
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").withZone(ZoneId.from(ZoneOffset.UTC))
         val formattedTime = formatter.format(Instant.now())
         val branchName = "${stage.lowercase(Locale.getDefault())}-configuration-update-$formattedTime"
         createBranch(branchName)
 
         // Do the GitHub work to commit changes to the branch
-        commitConfigurationChanges(branchName, message, data)
+        commitConfigurationChanges(branchName, commitMessage, data)
 
         // Finally create the pull request
-        val pullRequestUrl = createPullRequest(branchName, message)
+        val pullRequestUrl = createPullRequest(branchName, commitMessage)
 
         // Log and return some info
         val info = "API successfully created GitHub pull request: $pullRequestUrl"

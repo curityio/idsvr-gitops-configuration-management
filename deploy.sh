@@ -21,14 +21,6 @@ if [ "$LICENSE_KEY" == 'null' ]; then
 fi
 
 #
-# Point to the GitHub account containing the repo used to store configuration
-#
-if [ "$GITHUB_USER_ACCOUNT_NAME" == '' ]; then
-  echo 'Please supply a GITHUB_USER_ACCOUNT_NAME environment variable that points to your online repository'
-  exit
-fi
-
-#
 # This example accepts a stage of the deployment pipeline as a parameter
 #
 if [ "$STAGE" != 'DEV' -a "$STAGE" != 'STAGING' -a "$STAGE" != 'PRODUCTION' ]; then
@@ -38,32 +30,16 @@ fi
 STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
 
 #
-# Download configuration at deployment time from the GitOps configuration repository
-#
-if [ -d ./resources/ ]; then
-  rm -rf resources
-fi
-git clone "https://github.com/$GITHUB_USER_ACCOUNT_NAME/idsvr-configuration-store" resources
-if [ $? -ne 0 ]; then
-  echo 'Problem encountered downloading the GitOps configuration'
-  exit
-fi
-
-#
 # Make some sanity checks
 #
-ENVIRONMENT_FILE="./resources/$STAGE_LOWER.json"
+ENVIRONMENT_FILE="./resources/environment/$STAGE_LOWER.json"
 if [ ! -f "$ENVIRONMENT_FILE" ]; then
-  echo 'Environment JSON file was not found in the downloaded data'
-  exit
-fi
-if [ ! -f "./resources/parameterized-config-backup.xml" ]; then
-  echo 'Identity Server configuration was not found in the downloaded data'
+  echo 'An environment JSON file was not found in the downloaded data'
   exit
 fi
 
 #
-# Read environment specific values
+# Get environment specific values
 #
 JSON=$(cat "$ENVIRONMENT_FILE")
 IDSVR_BASE_URL=$(echo "$JSON" | jq -r .IDSVR_BASE_URL)
@@ -76,5 +52,4 @@ export STAGE
 export LICENSE_KEY
 export IDSVR_BASE_URL
 export WEB_BASE_URL
-cd idsvr
 docker compose --project-name curityconfig up
