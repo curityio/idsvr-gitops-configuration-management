@@ -16,6 +16,14 @@
  
 package io.curity.githubintegration
 
+import io.curity.githubintegration.infrastructure.ApiError
+import io.curity.githubintegration.infrastructure.ApiExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,16 +34,33 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 @RequestMapping(value = ["configuration"])
-class ApiController(private val configuration: Configuration) {
+open class ApiController(private val configuration: Configuration) {
 
     /*
      * Receive data from the Identity Server, then call GitHub to trigger a pull request
      */
     @PostMapping(value = ["/pull-requests"])
-    suspend fun createPullRequest(@RequestBody(required = true) body: PullRequestInput): PullRequestOutput {
+    fun createPullRequest(@RequestBody(required = true) body: PullRequestInput): ResponseEntity<PullRequestOutput> {
 
-        val client = GitHubApiClient(configuration)
-        val info = client.createAutomatedPullRequest(body.stage, body.message, body.data)
-        return PullRequestOutput(info)
+        // Do the lengthy work in an async task
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val logger = LoggerFactory.getLogger(ApiController::class.java)
+            try {
+
+                logger.info("API is creating pull request: ${body.message}")
+                val client = GitHubApiClient(configuration)
+                val pullRequestUrl = client.createAutomatedPullRequest(body.stage, body.message, body.data)
+                logger.info("API successfully created pull request at: $pullRequestUrl")
+
+            } catch (ex: ApiError) {
+                ApiExceptionHandler().handleException(ex)
+            }
+        }
+
+        // Return a 202 accepted response to the admin node of the Identity Server
+        return ResponseEntity(
+            PullRequestOutput("API is creating pull request: ${body.message}"),
+            HttpStatus.ACCEPTED)
     }
 }

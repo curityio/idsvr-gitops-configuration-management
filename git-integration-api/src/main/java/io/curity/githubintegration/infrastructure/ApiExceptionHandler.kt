@@ -25,8 +25,23 @@ import javax.servlet.http.HttpServletResponse
 @RestControllerAdvice
 class ApiExceptionHandler {
 
+    /*
+     * Handler controller operations
+     */
     @ExceptionHandler
     fun handleException(error: ApiError, response: HttpServletResponse) {
+
+        val clientErrorPayload = handleException(error)
+
+        response.setHeader("Content-Type", "application/json")
+        response.status = error.statusCode
+        response.writer.write(clientErrorPayload.toString())
+    }
+
+    /*
+     * Used for both controller and worker thread exceptions
+     */
+    fun handleException(error: ApiError): String {
 
         val mapper = ObjectMapper()
         val clientErrorPayload = mapper.createObjectNode()
@@ -34,9 +49,6 @@ class ApiExceptionHandler {
         clientErrorPayload.put("message", error.message)
 
         LoggerFactory.getLogger(ApiExceptionHandler::class.java).error(error.logInfo())
-
-        response.setHeader("Content-Type", "application/json")
-        response.status = error.statusCode
-        response.writer.write(clientErrorPayload.toString())
+        return clientErrorPayload.toString()
     }
 }

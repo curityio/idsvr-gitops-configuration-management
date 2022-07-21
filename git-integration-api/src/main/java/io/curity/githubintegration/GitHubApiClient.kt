@@ -26,7 +26,6 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlinx.coroutines.future.await
-import org.slf4j.LoggerFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -66,13 +65,8 @@ class GitHubApiClient(private val configuration: Configuration) {
         // Do the GitHub work to commit changes to the branch
         commitConfigurationChanges(branchName, commitMessage, data)
 
-        // Finally create the pull request
-        val pullRequestUrl = createPullRequest(branchName, commitMessage)
-
-        // Log and return some info
-        val info = "API successfully created GitHub pull request: $pullRequestUrl"
-        LoggerFactory.getLogger(GitHubApiClient::class.java).info(info)
-        return info
+        // Finally, create the pull request and return its URL
+        return createPullRequest(branchName, commitMessage)
     }
 
     /*
