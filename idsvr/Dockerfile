@@ -1,5 +1,13 @@
 FROM curity.azurecr.io/curity/idsvr:7.2.0
 
+# Copy in multiple parameterized configuration files
+RUN rm -rf /opt/idsvr/etc/init/*.xml
+RUN rm -rf /opt/idsvr/etc/init/*
+COPY resources/config /opt/idsvr/etc/init
+
+# Copy in post commit scripts
+COPY idsvr/post-commit-trigger-pull-request.sh /opt/idsvr/usr/bin/post-commit-scripts/
+
 # For the purposes of this code example we install the curl tool
 USER root
 RUN apt-get update
