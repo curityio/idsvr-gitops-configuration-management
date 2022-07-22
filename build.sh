@@ -30,7 +30,7 @@ fi
 # TODO: delete after merge
 #
 cd resources
-git checkout dev
+git checkout feature/dev
 cd ..
 
 #

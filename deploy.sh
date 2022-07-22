@@ -32,9 +32,9 @@ STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
 #
 # Make some sanity checks
 #
-ENVIRONMENT_FILE="./resources/environment/$STAGE_LOWER.json"
+ENVIRONMENT_FILE="./resources/environments/$STAGE_LOWER.json"
 if [ ! -f "$ENVIRONMENT_FILE" ]; then
-  echo 'An environment JSON file was not found in the downloaded data'
+  echo "The environment file at $ENVIRONMENT_FILE was not found"
   exit
 fi
 
