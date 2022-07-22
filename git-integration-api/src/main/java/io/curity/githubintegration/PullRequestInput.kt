@@ -19,5 +19,9 @@ package io.curity.githubintegration
 data class PullRequestInput(
     val stage: String,
     val message: String,
-    val data: String
+    val environments: String,
+    val facilities: String,
+    val profiles: String,
+    val nacm: String,
+    val aaa: String
 )

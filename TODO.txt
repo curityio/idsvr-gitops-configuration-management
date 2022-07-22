@@ -1,17 +1,19 @@
-1. Split the config files and check deployment works
-   Remove GitHub details and checkin to dev branch
-
-2. Post commit and API interface changes to accept data
-   Then throw a 'Not implemented error'
-
-3. GitHub API changes
+1. GitHub API changes
    Multiple files within one commit
    Possible error response to handle
    Merge code, backup + reset repo
 
-4. Merge code + update article
+2. Merge code + update article
    More complete environment variables
    Include crypto keys
+   Update PRs
 
-5. Ioana images to merge
+3. Ioana images to merge
    Michal reviews to look at
+
+isReady:false
+nodeState:BOOTING
+clusterState:STANDALONE
+configurationState:UNINITIALIZED
+transactionId:67A-74564-E33D5
+isServing:false

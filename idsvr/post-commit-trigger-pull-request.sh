@@ -31,17 +31,32 @@ if [ "$IS_READY" == 'true' -a "$IS_SERVING" == 'true' ]; then
   COMMIT_MESSAGE=$(echo "$COMMENT_LINE" | sed -r "s/^# Comment: (.*)$/\1/i")
 
   #
-  # Export the configuration with the -D parameter to preserve environment variables
-  # Also remove the cluster and license details, which should be supplied outside the configuration on the next deployment
+  # Export the configuration as XML, with the -D parameter to preserve environment variables
   #
-  CONFIG_BACKUP_XML=$(idsvr -D | sed  '/<cluster>/,/<\/cluster>/d')
-  CONFIG_BACKUP_BASE64=$(echo "$CONFIG_BACKUP_XML" | base64 -w 0)
-  echo "$CONFIG_BACKUP_XML" > /tmp/parameterized-config-backup.xml
+  CONFIG_ENVIRONMENTS_XML=$(idsvr -D environments)
+  CONFIG_FACILITIES_XML=$(idsvr -D facilities)
+  CONFIG_PROFILES_XML=$(idsvr -D profiles)
+  CONFIG_NACM_XML=$(idsvr -D nacm)
+  CONFIG_AAA_XML=$(idsvr -D aaa)
+
   #
-  # Form a JSON payload with the stage of the deployment pipeline and the commit message
+  # Translate to base 64 for including in a JSON payload
   #
-  REQUEST_CONTENT="{\"stage\": \"$STAGE\", \"message\": \"$COMMIT_MESSAGE\", \"data\": \"$CONFIG_BACKUP_BASE64\"}"
-  echo "$REQUEST_CONTENT" > /tmp/example_request_content.json
+  CONFIG_ENVIRONMENTS_BASE64=$(echo "$CONFIG_ENVIRONMENTS_XML" | base64 -w 0)
+  CONFIG_FACILITIES_BASE64=$(echo "$CONFIG_FACILITIES_XML" | base64 -w 0)
+  CONFIG_PROFILES_BASE64=$(echo "$CONFIG_PROFILES_XML" | base64 -w 0)
+  CONFIG_NACM_BASE64=$(echo "$CONFIG_NACM_XML" | base64 -w 0)
+  CONFIG_AAA_BASE64=$(echo "$CONFIG_AAA_XML" | base64 -w 0)
+
+  #
+  # Form a JSON payload with the stage of the deployment pipeline, the commit message, and the data in parts
+  #
+  REQUEST_CONTENT="{\"stage\": \"$STAGE\", \"message\": \"$COMMIT_MESSAGE\", \"environments\": \"$CONFIG_ENVIRONMENTS_BASE64\", \"facilities\": \"$CONFIG_FACILITIES_BASE64\", \"profiles\": \"$CONFIG_PROFILES_BASE64\", \"nacm\": \"$CONFIG_NACM_BASE64\", \"aaa\": \"$CONFIG_AAA_BASE64\"}"
+  
+  #
+  # Store a copy of the request payload for development debugging
+  #
+  echo "$REQUEST_CONTENT" > /tmp/example-request-content.json
 
   #
   # Define details for connecting to the utility API that will create the Git pull request
