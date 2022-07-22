@@ -48,12 +48,10 @@ open class ApiController(private val configuration: Configuration) {
             val logger = LoggerFactory.getLogger(ApiController::class.java)
             try {
 
-                throw ApiError(400, "not_implemented", "Multi part configuration not yet implemented")
-                
-                /*logger.info("API is creating pull request: ${body.message}")
+                logger.info("API is creating pull request: ${body.message}")
                 val client = GitHubApiClient(configuration)
                 val pullRequestUrl = client.createAutomatedPullRequest(body)
-                logger.info("API successfully created pull request at: $pullRequestUrl")*/
+                logger.info("API successfully created pull request at: $pullRequestUrl")
 
             } catch (ex: ApiError) {
                 ApiExceptionHandler().handleException(ex)

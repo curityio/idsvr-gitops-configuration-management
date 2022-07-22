@@ -62,8 +62,16 @@ class GitHubApiClient(private val configuration: Configuration) {
         val branchName = "${input.stage.lowercase(Locale.getDefault())}-configuration-update-$formattedTime"
         createBranch(branchName)
 
+        // Get the parts of the input into a form for updating
+        val fileUpdates = mutableListOf<GitFileUpdate>()
+        fileUpdates.add(GitFileUpdate("environments.xml", input.environments))
+        fileUpdates.add(GitFileUpdate("facilities.xml", input.facilities))
+        fileUpdates.add(GitFileUpdate("profiles.xml", input.profiles))
+        fileUpdates.add(GitFileUpdate("nacm.xml", input.nacm))
+        fileUpdates.add(GitFileUpdate("aaa.xml", input.aaa))
+
         // Do the GitHub work to commit changes to the branch
-        commitConfigurationChanges(branchName, commitMessage, input.environments)
+        commitConfigurationChanges(branchName, commitMessage, fileUpdates)
 
         // Finally, create the pull request and return its URL
         return createPullRequest(branchName, commitMessage)
@@ -90,7 +98,7 @@ class GitHubApiClient(private val configuration: Configuration) {
      * Commit changes to the branch, which is quite complicated with the GitHub API and explained here:
      * https://www.levibotelho.com/development/commit-a-file-with-the-github-api/
      */
-    private suspend fun commitConfigurationChanges(branchName: String, message: String, data: String) {
+    private suspend fun commitConfigurationChanges(branchName: String, message: String, fileUpdates: List<GitFileUpdate>) {
 
         // Step 1: Get the current head on the branch
         val getCurrentHeadResponse = callApi("GET", "$repoBaseUrl/git/ref/heads/$branchName", null)
@@ -103,27 +111,32 @@ class GitHubApiClient(private val configuration: Configuration) {
         val lastCommitTreeNode = readResponseObjectField(getCurrentCommitResponse, "tree")
         val lastCommitTreeUrl = readResponseStringField(lastCommitTreeNode,"url")
 
-        // Step 3. Create a blob containing a base 64 representation of the Curity Identity Server configuration
+        // Step 3. For each update, create a blob
         val mapper = ObjectMapper()
-        val createBlobPayload = mapper.createObjectNode()
-        createBlobPayload.put("content", data)
-        createBlobPayload.put("encoding", "base64")
-        val createBlobResponse = callApi("POST", "$repoBaseUrl/git/blobs", createBlobPayload.toString())
-        val blobSha = readResponseStringField(createBlobResponse, "sha")
+        val blobShas = mutableListOf<String>()
+        fileUpdates.forEach {
+            val createBlobPayload = mapper.createObjectNode()
+            createBlobPayload.put("content", it.data)
+            createBlobPayload.put("encoding", "base64")
+            val createBlobResponse = callApi("POST", "$repoBaseUrl/git/blobs", createBlobPayload.toString())
+            it.blobSha = readResponseStringField(createBlobResponse, "sha")
+        }
 
         // Step 4: Get the tree sha of the last commit
         val getTreeResponse = callApi("GET", lastCommitTreeUrl, null)
         val treeSha = readResponseStringField(getTreeResponse,"sha")
 
-        // Step 5a: Create a new tree with the files to update
+        // Step 5a: Create a new tree referencing the configuration parts to update
         val createTreePayload = mapper.createObjectNode()
         val filesToUpdate = mapper.createArrayNode()
-        val fileToUpdate = mapper.createObjectNode()
-        fileToUpdate.put("path", "parameterized-config-backup.xml")
-        fileToUpdate.put("mode", "100644")
-        fileToUpdate.put("type", "blob")
-        fileToUpdate.put("sha", blobSha)
-        filesToUpdate.add(fileToUpdate)
+        fileUpdates.forEach {
+            val fileToUpdate = mapper.createObjectNode()
+            fileToUpdate.put("path", it.path)
+            fileToUpdate.put("mode", "100644")
+            fileToUpdate.put("type", "blob")
+            fileToUpdate.put("sha", it.blobSha)
+            filesToUpdate.add(fileToUpdate)
+        }
         createTreePayload.put("base_tree", treeSha)
         createTreePayload.set<ArrayNode>("tree", filesToUpdate)
         val createTreeResponse = callApi("POST","$repoBaseUrl/git/trees", createTreePayload.toString())
