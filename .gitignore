@@ -1,0 +1,17 @@
+.DS_Store
+license.json
+
+# Created resources to exclude
+/resources
+.env
+configbackup
+initial-config-backup.xml
+temp-config.xml
+*.p12
+*.key
+*.crt
+
+# Kotlin API files to exclude
+build
+.gradle
+.idea
