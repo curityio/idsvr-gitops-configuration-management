@@ -10,8 +10,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 # Point to files
 #
 SOURCE_FILE=./initial-config-backup.xml
-TARGET_FILE_PLAINTEXT=../git-repo/dev/environment.json
-TARGET_FILE_SECURE=../vault/dev/secure.json
+TARGET_FILE_PLAINTEXT=../git-repo/dev.env
+TARGET_FILE_SECURE=../vault/dev/secure.env
 
 #
 # Check that there is a configuration backup file
@@ -27,11 +27,6 @@ fi
 xml --version 1>/dev/null
 if [ $? -ne 0 ]; then
   echo 'Problem encountered, please ensure that the xmlstarlet tool is installed'
-  exit 1
-fi
-jq --version 1>/dev/null
-if [ $? -ne 0 ]; then
-  echo 'Problem encountered, please ensure that the jq tool is installed'
   exit 1
 fi
 
@@ -53,9 +48,10 @@ WEB_BASE_URL=$(xml sel -N x='http://tail-f.com/ns/config/1.0' -N b='https://curi
 #
 # Save them to plaintext environment data
 #
-cat <<< "$(jq --arg param_value "$RUNTIME_BASE_URL" '.RUNTIME_BASE_URL = $param_value' "$TARGET_FILE_PLAINTEXT")" > "$TARGET_FILE_PLAINTEXT"
-cat <<< "$(jq --arg param_value "$DB_USERNAME" '.DB_USERNAME = $param_value' "$TARGET_FILE_PLAINTEXT")" > "$TARGET_FILE_PLAINTEXT"
-cat <<< "$(jq --arg param_value "$WEB_BASE_URL" '.WEB_BASE_URL = $param_value' "$TARGET_FILE_PLAINTEXT")" > "$TARGET_FILE_PLAINTEXT"
+> "$TARGET_FILE_PLAINTEXT"
+echo "RUNTIME_BASE_URL='$RUNTIME_BASE_URL'" >> "$TARGET_FILE_PLAINTEXT"
+echo "DB_USERNAME='$DB_USERNAME'"           >> "$TARGET_FILE_PLAINTEXT"
+echo "WEB_BASE_URL='$WEB_BASE_URL'"         >> "$TARGET_FILE_PLAINTEXT"
 
 #
 # Read encrypted fields
@@ -87,11 +83,12 @@ VERIFICATION_KEY=$(xml sel -N x='http://tail-f.com/ns/config/1.0' -N b='https://
 #
 # Save them to encrypted environment data
 #
-cat <<< "$(jq --arg param_value "$ADMIN_PASSWORD" '.ADMIN_PASSWORD = $param_value' "$TARGET_FILE_SECURE")" > "$TARGET_FILE_SECURE"
-cat <<< "$(jq --arg param_value "$DB_CONNECTION" '.DB_CONNECTION = $param_value' "$TARGET_FILE_SECURE")" > "$TARGET_FILE_SECURE"
-cat <<< "$(jq --arg param_value "$DB_PASSWORD" '.DB_PASSWORD = $param_value' "$TARGET_FILE_SECURE")" > "$TARGET_FILE_SECURE"
-cat <<< "$(jq --arg param_value "$WEB_CLIENT_SECRET" '.WEB_CLIENT_SECRET = $param_value' "$TARGET_FILE_SECURE")" > "$TARGET_FILE_SECURE"
-cat <<< "$(jq --arg param_value "$SYMMETRIC_KEY" '.SYMMETRIC_KEY = $param_value' "$TARGET_FILE_SECURE")" > "$TARGET_FILE_SECURE"
-cat <<< "$(jq --arg param_value "$SSL_KEY" '.SSL_KEY = $param_value' "$TARGET_FILE_SECURE")" > "$TARGET_FILE_SECURE"
-cat <<< "$(jq --arg param_value "$SIGNING_KEY" '.SIGNING_KEY = $param_value' "$TARGET_FILE_SECURE")" > "$TARGET_FILE_SECURE"
-cat <<< "$(jq --arg param_value "$VERIFICATION_KEY" '.VERIFICATION_KEY = $param_value' "$TARGET_FILE_SECURE")" > "$TARGET_FILE_SECURE"
+> "$TARGET_FILE_SECURE"
+echo "ADMIN_PASSWORD='$ADMIN_PASSWORD'"       >> "$TARGET_FILE_SECURE"
+echo "DB_CONNECTION='$DB_CONNECTION'"         >> "$TARGET_FILE_SECURE"
+echo "DB_PASSWORD='$DB_PASSWORD'"             >> "$TARGET_FILE_SECURE"
+echo "WEB_CLIENT_SECRET='$WEB_CLIENT_SECRET'" >> "$TARGET_FILE_SECURE"
+echo "SYMMETRIC_KEY='$SYMMETRIC_KEY'"         >> "$TARGET_FILE_SECURE"
+echo "SSL_KEY='$SSL_KEY'"                     >> "$TARGET_FILE_SECURE"
+echo "SIGNING_KEY='$SIGNING_KEY'"             >> "$TARGET_FILE_SECURE"
+echo "VERIFICATION_KEY='$VERIFICATION_KEY'"   >> "$TARGET_FILE_SECURE"

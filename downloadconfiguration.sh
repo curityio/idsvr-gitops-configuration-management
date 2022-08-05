@@ -30,7 +30,7 @@ if [ "$GIT_CONFIG_BACKUP" == 'true' ]; then
 else
 
   #
-  # Otherwise just copy over the local configuration
+  # The early tutorial setup just 'downloads' from a local folder, to avoid the need for a separate Git repo
   #
   cp -R ./git-repo resources
 fi

@@ -7,21 +7,24 @@
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 #
-# Get the stage of the pipeline as a parameter
+# Set variables depending on the stage of the pipeline
 #
-if [ "$STAGE" != 'DEV' -a "$STAGE" != 'STAGING' -a "$STAGE" != 'PRODUCTION' ]; then
+if [ "$STAGE" == 'DEV' ]; then
+
+  STAGE_LOWER='dev'
+
+elif [ "$STAGE" == 'STAGING' ]; then
+
+  STAGE_LOWER='staging'
+
+elif [ "$STAGE" == 'STAGING' ]; then
+
+  STAGE_LOWER='production'
+
+else
+
   echo 'Please supply a STAGE environment variable equal to DEV, STAGING or PRODUCTION'
   exit
-fi
-STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
-
-#
-# Check that tools are installed
-#
-jq --version 1>/dev/null
-if [ $? -ne 0 ]; then
-  echo 'Problem encountered, please ensure that the jq tool is installed'
-  exit 1
 fi
 
 #
@@ -142,11 +145,12 @@ fi
 # Update the stage specific environment file with secure environment specific values
 #
 cd "../vault/$STAGE_LOWER"
-cat <<< "$(jq --arg secure_value "$SSL_KEY_ENCRYPTED" '.SSL_KEY = $secure_value' secure.json)" > secure.json
-cat <<< "$(jq --arg secure_value "$SIGNING_KEY_ENCRYPTED" '.SIGNING_KEY = $secure_value' secure.json)" > secure.json
-cat <<< "$(jq --arg secure_value "$VERIFICATION_KEY_ENCRYPTED" '.VERIFICATION_KEY = $secure_value' secure.json)" > secure.json
-cat <<< "$(jq --arg secure_value "$SYMMETRIC_KEY_ENCRYPTED" '.SYMMETRIC_KEY = $secure_value' secure.json)" > secure.json
-cat <<< "$(jq --arg secure_value "$ADMIN_PASSWORD_ENCRYPTED" '.ADMIN_PASSWORD = $secure_value' secure.json)" > secure.json
-cat <<< "$(jq --arg secure_value "$DB_CONNECTION_ENCRYPTED" '.DB_CONNECTION = $secure_value' secure.json)" > secure.json
-cat <<< "$(jq --arg secure_value "$DB_PASSWORD_ENCRYPTED" '.DB_PASSWORD = $secure_value' secure.json)" > secure.json
-cat <<< "$(jq --arg secure_value "$WEB_CLIENT_SECRET_ENCRYPTED" '.WEB_CLIENT_SECRET = $secure_value' secure.json)" > secure.json
+> secure.env
+echo "ADMIN_PASSWORD='$ADMIN_PASSWORD_ENCRYPTED'"       >> secure.env
+echo "DB_CONNECTION='$DB_CONNECTION_ENCRYPTED'"         >> secure.env
+echo "DB_PASSWORD='$DB_PASSWORD_ENCRYPTED'"             >> secure.env
+echo "WEB_CLIENT_SECRET='$WEB_CLIENT_SECRET_ENCRYPTED'" >> secure.env
+echo "SYMMETRIC_KEY='$SYMMETRIC_KEY_ENCRYPTED'"         >> secure.env
+echo "SSL_KEY='$SSL_KEY_ENCRYPTED'"                     >> secure.env
+echo "SIGNING_KEY='$SIGNING_KEY_ENCRYPTED'"             >> secure.env
+echo "VERIFICATION_KEY='$VERIFICATION_KEY_ENCRYPTED'"   >> secure.env
