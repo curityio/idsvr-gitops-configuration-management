@@ -11,12 +11,8 @@ This request is triggered from a post commit hook in the Curity Identity Server:
 {
   "stage": "DEV",
   "message": "My configuration edit message typed into the Admin UI",
-  "environments": "...",
-  "profiles": "...",
-  "facilities": "...",
-  "processing": "...",
-  "nacm": "...",
-  "aaa": "...",
+  "paramsXml": "...",
+  "valuesXml": "..."
 }
 ```
 
@@ -54,5 +50,5 @@ Test it with this command, using a backed up request payload:
 The API's GitHubClient class then performs these steps:
 
 - Creates a branch
-- Commits the configuration XML on that branch
+- Commits the configuration XML and environment changes on that branch
 - Creates a pull request to merge to the main branch
