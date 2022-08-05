@@ -16,8 +16,6 @@
 
 package io.curity.githubintegration.xml
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.TextNode
 import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.parsers.DocumentBuilderFactory
@@ -30,11 +28,11 @@ import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
 import java.util.Base64
 import org.w3c.dom.Document
+import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import io.curity.githubintegration.errors.ApiError
-import org.w3c.dom.Element
 
 /*
  * A utility class to manage parsing and splitting XML
@@ -117,14 +115,11 @@ class ConfigurationReader(params: String, values: String) {
         val dbUsername = selectChildNodeText(valuesDoc, "/config/facilities/data-sources/data-source[id='default-datasource']/jdbc/username")
         val webBaseUrl = selectChildNodeText(valuesDoc, "/config/profiles/profile[id='token-service']/settings/authorization-server/client-store/config-backed/client[id='web-client']/redirect-uris")
 
-        val mapper = ObjectMapper()
-        val data = mapper.createObjectNode();
-        data.put("RUNTIME_BASE_URL", runtimeBaseUrl);
-        data.put("DB_USERNAME", dbUsername);
-        data.put("WEB_BASE_URL", webBaseUrl);
-
-        val json = data.toPrettyString()
-        return Base64.getEncoder().encodeToString(json.toByteArray())
+        val text = StringBuilder()
+        text.appendLine("RUNTIME_BASE_URL='$runtimeBaseUrl'")
+        text.appendLine("DB_USERNAME='$dbUsername'")
+        text.appendLine("WEB_BASE_URL='$webBaseUrl'")
+        return text.toString()
     }
 
     /*
