@@ -82,7 +82,7 @@ class GitHubApiClient(private val configuration: Configuration) {
         fileUpdates.add(GitHubFileUpdate("config/facilities.xml", facilitiesData))
         fileUpdates.add(GitHubFileUpdate("config/tokenservice.xml", tokenServiceData))
         fileUpdates.add(GitHubFileUpdate("config/authenticationservice.xml", authenticationServiceData))
-        fileUpdates.add(GitHubFileUpdate("${input.stage.lowercase()}/environment.json", environmentSpecificData))
+        fileUpdates.add(GitHubFileUpdate("${input.stage.lowercase()}.env", environmentSpecificData))
 
         // Do the GitHub work to commit changes to the branch
         commitConfigurationChanges(branchName, commitMessage, fileUpdates)

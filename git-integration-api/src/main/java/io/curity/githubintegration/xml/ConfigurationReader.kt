@@ -119,7 +119,7 @@ class ConfigurationReader(params: String, values: String) {
         text.appendLine("RUNTIME_BASE_URL='$runtimeBaseUrl'")
         text.appendLine("DB_USERNAME='$dbUsername'")
         text.appendLine("WEB_BASE_URL='$webBaseUrl'")
-        return text.toString()
+        return Base64.getEncoder().encodeToString(text.toString().toByteArray())
     }
 
     /*

@@ -102,7 +102,7 @@ The deployment uses the configuration encryption key created earlier:
 
 ```bash
 export STAGE=DEV
-export LICENSE_FILE_PATH=~/curity/license.json
+export LICENSE_FILE_PATH=~/Desktop/license.json
 ./build.sh
 ./deploy.sh
 ```
@@ -133,7 +133,7 @@ Redeploy the system with additional Git parameters:
 export GIT_CONFIG_BACKUP=true
 export GITHUB_USER_ACCOUNT_NAME=john.doe
 export STAGE=DEV
-export LICENSE_FILE_PATH=/Users/john.doe/Desktop/license.json
+export LICENSE_FILE_PATH=~/Desktop/license.json
 ./build.sh
 ./deploy.sh
 ```
