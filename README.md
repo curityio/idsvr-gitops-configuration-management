@@ -80,9 +80,9 @@ DB_USERNAME='SA'
 WEB_BASE_URL='https://web.example-dev.com'
 ```
 
-It also creates the following secure environment variables at `./vault/dev/secure.json`:
+It also creates the following secure environment variables at `./vault/dev/secure.env`:
 
-```json
+```text
 ADMIN_PASSWORD='$5$uquoeYRe$GLtb4BhlI4HMAB7bScW7r6CETdFhM6DKyRoQdev3EqC'
 DB_CONNECTION='data:text/plain;aes,v:S.UWVaUGR1N1JwN2JC ...'
 DB_PASSWORD='data:text/plain;aes,v:S.Nzl1UGVRZklDVlNMMGRDSw==.2JiZkUjJKhlvYQoMH ...'
