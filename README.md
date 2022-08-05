@@ -9,9 +9,9 @@ It also eliminates most risk when adding new environments to your deployment pip
 To run the end-to-end setup ensure that these tools are installed locally.\
 Also install Java 11+ if you want to use the advanced backup to a Git repo.
 
-- [Docker](https://www.docker.com/products/docker-desktop)
-- [openssl](https://www.openssl.org/source/)
-- [xmlstarlet](http://xmlstar.sourceforge.net/)
+- [Docker](https://www.docker.com/products/docker-desktop) to deploy the system
+- [xmlstarlet](http://xmlstar.sourceforge.net/) to run a migration script that parses XML
+- [openssl](https://www.openssl.org/source/) to run crypto operations later
 
 You will also need a `license.json` file for the Curity Identity Server.
 
