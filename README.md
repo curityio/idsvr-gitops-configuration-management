@@ -6,8 +6,7 @@ It also eliminates most risk when adding new environments to your deployment pip
 
 ## Prerequisites
 
-To run the end-to-end setup ensure that these tools are installed locally.\
-Also install Java 11+ if you want to use the advanced backup to a Git repo.
+To run the end-to-end setup ensure that these tools are installed locally:
 
 - [Docker](https://www.docker.com/products/docker-desktop) to deploy the system
 - [xmlstarlet](http://xmlstar.sourceforge.net/) to run a migration script that parses XML
