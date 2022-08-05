@@ -11,8 +11,8 @@ This request is triggered from a post commit hook in the Curity Identity Server:
 {
   "stage": "DEV",
   "message": "My configuration edit message typed into the Admin UI",
-  "paramsXml": "...",
-  "valuesXml": "..."
+  "params": "...",
+  "values": "..."
 }
 ```
 
