@@ -8,13 +8,25 @@
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 #
-# Get the stage of the pipeline
+# Set variables depending on the stage of the pipeline
 #
-if [ "$STAGE" != 'DEV' -a "$STAGE" != 'STAGING' -a "$STAGE" != 'PRODUCTION' ]; then
+if [ "$STAGE" == 'DEV' ]; then
+
+  STAGE_LOWER='dev'
+
+elif [ "$STAGE" == 'STAGING' ]; then
+
+  STAGE_LOWER='staging'
+
+elif [ "$STAGE" == 'STAGING' ]; then
+
+  STAGE_LOWER='production'
+
+else
+
   echo 'Please supply a STAGE environment variable equal to DEV, STAGING or PRODUCTION'
   exit
 fi
-STAGE_LOWER=$(echo "$STAGE" | tr '[:upper:]' '[:lower:]')
 
 #
 # Check for a license file
@@ -45,32 +57,22 @@ fi
 CONFIG_ENCRYPTION_KEY=$(cat "$ENCRYPTION_KEY_PATH")
 
 #
-# Read plaintext environment data
+# Make a sanity check to ensure that secure environment data has been populated
 #
-JSON=$(cat "./resources/$STAGE_LOWER/environment.json")
-RUNTIME_BASE_URL=$(echo "$JSON" | jq -r .RUNTIME_BASE_URL)
-DB_USERNAME=$(echo "$JSON" | jq -r .DB_USERNAME)
-WEB_BASE_URL=$(echo "$JSON" | jq -r .WEB_BASE_URL)
-
-#
-# Read secure environment data, and escape $ characters in encrypted passwords as $$
-#
-JSON=$(cat "./vault/$STAGE_LOWER/secure.json")
-ADMIN_PASSWORD=$(echo "$JSON" | jq -r .ADMIN_PASSWORD)
-DB_CONNECTION=$(echo "$JSON" | jq -r .DB_CONNECTION)
-DB_PASSWORD=$(echo "$JSON" | jq -r .DB_PASSWORD)
-WEB_CLIENT_SECRET=$(echo "$JSON" | jq -r .WEB_CLIENT_SECRET)
-SSL_KEY=$(echo "$JSON" | jq -r .SSL_KEY)
-SIGNING_KEY=$(echo "$JSON" | jq -r .SIGNING_KEY)
-VERIFICATION_KEY=$(echo "$JSON" | jq -r .VERIFICATION_KEY)
-SYMMETRIC_KEY=$(echo "$JSON" | jq -r .SYMMETRIC_KEY)
-
-#
-# Create base environment variables
-#
-if [ -f .env ]; then
-  rm .env
+SSL_KEY=$(cat "./vault/$STAGE_LOWER/secure.env" | grep SSL_KEY)
+if [ "$SSL_KEY" == '' ]; then
+  echo 'Environment data must be populated before deploying the system'
+  exit
 fi
+
+#
+# Get all environment specific variables into a file that Docker Compose will use
+#
+cat "./resources/$STAGE_LOWER.env" "./vault/$STAGE_LOWER/secure.env" > .env
+
+#
+# Add base environment variables
+#
 echo "ADMIN='true'"                                   >> .env
 echo "LOGGING_LEVEL='INFO'"                           >> .env
 echo "LICENSE_KEY='$LICENSE_KEY'"                     >> .env
@@ -81,32 +83,6 @@ echo "CONFIG_ENCRYPTION_KEY='$CONFIG_ENCRYPTION_KEY'" >> .env
 #
 echo "STAGE='$STAGE'"                         >> .env
 echo "GIT_CONFIG_BACKUP='$GIT_CONFIG_BACKUP'" >> .env
-
-#
-# Add plaintext environment specific values
-#
-echo "RUNTIME_BASE_URL='$RUNTIME_BASE_URL'" >> .env
-echo "DB_USERNAME='$DB_USERNAME'"           >> .env
-echo "WEB_BASE_URL='$WEB_BASE_URL'"         >> .env
-
-#
-# Add secure environment variables
-#
-echo "ADMIN_PASSWORD='$ADMIN_PASSWORD'"       >> .env
-echo "DB_CONNECTION='$DB_CONNECTION'"         >> .env
-echo "DB_PASSWORD='$DB_PASSWORD'"             >> .env
-echo "WEB_CLIENT_SECRET='$WEB_CLIENT_SECRET'" >> .env
-echo "SSL_KEY='$SSL_KEY'"                     >> .env
-echo "SIGNING_KEY='$SIGNING_KEY'"             >> .env
-echo "VERIFICATION_KEY='$VERIFICATION_KEY'"   >> .env
-echo "SYMMETRIC_KEY='$SYMMETRIC_KEY'"         >> .env
-
-#
-# Make a sanity check to ensure that secure environments data has been populated
-#
-if [ "$SSL_KEY" == '' ]; then
-  echo 'Environment data must be populated before deploying the system'
-fi
 
 #
 # Make sure we have a configbackup folder, which the post commit script references

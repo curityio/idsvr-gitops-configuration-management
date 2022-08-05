@@ -12,31 +12,8 @@ services:
       - 8443:8443
     volumes:
       - ./configbackup:/mnt/configbackup
-    environment:
-      # Variables used directly by the Curity Identity Server
-      ADMIN: ${ADMIN}
-      LOGGING_LEVEL: ${LOGGING_LEVEL}
-      CONFIG_ENCRYPTION_KEY: ${CONFIG_ENCRYPTION_KEY}
-      
-      # Variables specific to the code example's behavior
-      STAGE: ${STAGE}
-      LICENSE_KEY: ${LICENSE_KEY}
-      GIT_CONFIG_BACKUP: ${GIT_CONFIG_BACKUP}
-
-      # Plaintext custom environment variables
-      RUNTIME_BASE_URL: ${RUNTIME_BASE_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      WEB_BASE_URL: ${WEB_BASE_URL}
-
-      # Secure custom environment variables
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      DB_CONNECTION: ${DB_CONNECTION}
-      DB_PASSWORD: ${DB_PASSWORD}
-      WEB_CLIENT_SECRET: ${WEB_CLIENT_SECRET}
-      SSL_KEY: ${SSL_KEY}
-      SIGNING_KEY: ${SIGNING_KEY}
-      VERIFICATION_KEY: ${VERIFICATION_KEY}
-      SYMMETRIC_KEY: ${SYMMETRIC_KEY}
+    env_file:
+      - .env
 
   #
   # Deploy a utility API used to create a GitHub pull request when configuration changes in the Admin UI

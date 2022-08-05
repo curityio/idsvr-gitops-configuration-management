@@ -11,7 +11,6 @@ Also install Java 11+ if you want to use the advanced backup to a Git repo.
 
 - [Docker](https://www.docker.com/products/docker-desktop)
 - [openssl](https://www.openssl.org/source/)
-- [jq](https://stedolan.github.io/jq/download/)
 - [xmlstarlet](http://xmlstar.sourceforge.net/)
 
 You will also need a `license.json` file for the Curity Identity Server.
@@ -73,29 +72,25 @@ For demo purposes this can be done by running the following script:
 ./migrate-configuration.sh
 ```
 
-This creates the following plaintext environment data at `./github-repo/dev/environent.json`:
+This creates the following plaintext environment data at `./github-repo/dev.env`:
 
-```json
-{
-  "RUNTIME_BASE_URL": "http://localhost:8443",
-  "DB_USERNAME": "SA",
-  "WEB_BASE_URL": "https://web.example-dev.com"
-}
+```text
+RUNTIME_BASE_URL='http://localhost:8443'
+DB_USERNAME='SA'
+WEB_BASE_URL='https://web.example-dev.com'
 ```
 
-It also creates the following secure environment variables at `./vault/dev/secure.json`:
+It also creates the following secure environment variables at `./vault/dev/secure.env`:
 
-```json
-{
-  "ADMIN_PASSWORD": "$5$kNu7FA5I$/9quUgGP1ggocyzcIrVgnPdguHyBL742aiX7rQJMA86",
-  "DB_CONNECTION": "data:text/plain;aes,v:S.a25oeGR4d053 ...",
-  "DB_PASSWORD": "data:text/plain;aes,v:S.NWNrVmM4YzVpZG0xWldJdQ==._5oFM ...",
-  "WEB_CLIENT_SECRET": "$5$kZo78W5Fug3iAY3T$gVXXkZXYW1SrF/AGiRl6NilGsSmLuqSW0JDG7SN6B92",
-  "SYMMETRIC_KEY": "data:text/plain;aes,v:S.c2xCODcwSm0wdklreFFrWA==.SjN12C2S ...",
-  "SSL_KEY": "data:application/p12;aes,v:S.NGN0QzJvZUNTMm85a1FjOA==.O6v7dR ...",
-  "SIGNING_KEY": "data:application/p12;aes,v:S.ZWw3WTU4WXFzdFZyazBMOQ==.lDKmjCGbFVP54OoITOwnOQ==.vdRzw1juq ...",
-  "VERIFICATION_KEY": "data:application/pem;aes,v:S.OWlMMzlqaThhSUxZbmR4TA==.0Hi0WUsPSfxw75t9eSfymw== ..."
-}
+```text
+ADMIN_PASSWORD='$5$uquoeYRe$GLtb4BhlI4HMAB7bScW7r6CETdFhM6DKyRoQdev3EqC'
+DB_CONNECTION='data:text/plain;aes,v:S.UWVaUGR1N1JwN2JC ...'
+DB_PASSWORD='data:text/plain;aes,v:S.Nzl1UGVRZklDVlNMMGRDSw==.2JiZkUjJKhlvYQoMH ...'
+WEB_CLIENT_SECRET='$5$.T/sE5LWsmRoD3xb$hL7dXaOV8WEKVRZeMuPlM6oFYFD7PH1UmUUHsirjaG1'
+SYMMETRIC_KEY='data:text/plain;aes,v:S.NzhhTTA3TWlHZ1BtSEJacg==.6xaTrU ...'
+SSL_KEY='data:application/p12;aes,v:S.THcyaW9XUzRxakpGZzMwcQ==.MPKK96RQ9z6 ...'
+SIGNING_KEY='data:application/p12;aes,v:S.bFRjcXpBY3hmSHREYXpBUg==.YdBLTdZTGlW ...'
+VERIFICATION_KEY='data:application/pem;aes,v:S.YUJnaGcxT0U5MjJjdTlQZQ==.RmC3nWa6x4 ...'
 ```
 
 ### Run Deployment with Parameters
@@ -107,7 +102,7 @@ The deployment uses the configuration encryption key created earlier:
 
 ```bash
 export STAGE=DEV
-export LICENSE_FILE_PATH=~/curity/license.json
+export LICENSE_FILE_PATH=~/Desktop/license.json
 ./build.sh
 ./deploy.sh
 ```
@@ -138,7 +133,7 @@ Redeploy the system with additional Git parameters:
 export GIT_CONFIG_BACKUP=true
 export GITHUB_USER_ACCOUNT_NAME=john.doe
 export STAGE=DEV
-export LICENSE_FILE_PATH=/Users/john.doe/Desktop/license.json
+export LICENSE_FILE_PATH=~/Desktop/license.json
 ./build.sh
 ./deploy.sh
 ```
