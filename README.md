@@ -65,7 +65,7 @@ An example split configuration is provided at `git-repo/config`, which consists 
 - tokenservice.xml
 - authenticationservice.xml
 
-Update the file at `git-repo/dev/environment.json` with values from your `initial-config-backup.xml` file.\
+Next extract environment specific values from your `initial-config-backup.xml` file.\
 For demo purposes this can be done by running the following script:
 
 ```bash
@@ -80,7 +80,7 @@ DB_USERNAME='SA'
 WEB_BASE_URL='https://web.example-dev.com'
 ```
 
-It also creates the following secure environment variables at `./vault/dev/secure.env`:
+It also creates the following protected environment variables at `./vault/dev/secure.env`:
 
 ```text
 ADMIN_PASSWORD='$5$uquoeYRe$GLtb4BhlI4HMAB7bScW7r6CETdFhM6DKyRoQdev3EqC'
@@ -155,8 +155,8 @@ export STAGE=STAGING
 ./create-development-keys.sh
 ```
 
-Next generate the secure environment data for the new environment.\
-The script shows how to convert keystores and secrets to the Curity Identity Server secure format:
+Next generate the secure environment specific data.\
+The script shows how to convert keystores and secrets to the Curity Identity Server's secure format:
 
 ```bash
 ./create-environment-data.sh
