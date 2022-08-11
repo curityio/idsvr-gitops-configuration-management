@@ -158,7 +158,8 @@ Next generate the secure environment specific data.\
 The script shows how to convert keystores and secrets to the Curity Identity Server's secure format:
 
 ```bash
-./create-environment-data.sh
+export IDSVR_HOME=~/idsvr-7.2.0/idsvr
+./create-secure-environment-data.sh
 ```
 
 Once the environment setup is done, you can immediately deploy the new stage with a working configuration.\
