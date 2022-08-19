@@ -10,7 +10,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 # Usage of this helper module
 #
 function usage_message() {
-  echo "Usage: './encrypt_util.sh type plaintextdata encryptionkey', where type is 'plain', 'p12' or 'pem'"
+  echo "Usage: './encrypt_util.sh type plaintextdata encryptionkey', where type is 'plaintext' or 'base64keystore'"
 }
 
 #
@@ -18,7 +18,7 @@ function usage_message() {
 #
 function encrypt_plaintext() {
 
-	CLASSPATH="$IDSVR_HOME/lib/*"
+	CLASSPATH="$IDSVR_HOME/lib/*:$IDSVR_HOME/lib/xml-tools/*"
 	XML_FILE=$(mktemp)
 	XSLT_FILE=$(mktemp)
 	trap 'rm -f "$XML_FILE $XSLT_FILE"' EXIT
@@ -70,7 +70,7 @@ EOF
 #
 function encrypt_base64keystore() {
 
-	CLASSPATH="$IDSVR_HOME/lib/*"
+	CLASSPATH="$IDSVR_HOME/lib/*:$IDSVR_HOME/lib/xml-tools/*"
 	XML_FILE=$(mktemp)
 	XSLT_FILE=$(mktemp)
 	trap 'rm -f "$XML_FILE $XSLT_FILE"' EXIT

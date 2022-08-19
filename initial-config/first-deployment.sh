@@ -24,4 +24,4 @@ echo "$KEY" > "$VAULT_FOLDER/configencryption.key"
 docker run -it -p 6749:6749 -p 8443:8443 \
 -e PASSWORD='Password1' \
 -e CONFIG_ENCRYPTION_KEY="$KEY" \
-curity.azurecr.io/curity/idsvr:7.2.0
+curity.azurecr.io/curity/idsvr:7.3.1
