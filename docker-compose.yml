@@ -6,7 +6,7 @@ services:
   #
   curity-idsvr:
     hostname: identityserver-internal
-    image: custom_idsvr:7.3.1
+    image: custom_idsvr:8.6.1
     ports:
       - 6749:6749
       - 8443:8443

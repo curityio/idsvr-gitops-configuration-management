@@ -18,7 +18,7 @@ fi
 #
 # Build the Curity Identity Server's custom Docker image
 #
-docker build -f idsvr/Dockerfile -t custom_idsvr:7.3.1 .
+docker build -f idsvr/Dockerfile -t custom_idsvr:8.6.1 .
 if [ $? -ne 0 ]; then
   echo 'Problem encountered building the Identity Server docker image'
   exit
