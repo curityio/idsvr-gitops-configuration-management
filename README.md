@@ -33,7 +33,7 @@ cd initial-config
 ./first-deployment.sh
 ```
 
-Then login to the Admin UI at http://localhost:6749/admin with credentials `admin / Password1`.\
+Then login to the Admin UI at https://localhost:6749/admin with credentials `admin / Password1`.\
 Complete the initial setup and upload a license file.\
 Under `Token Service / Clients`, create a web client and assign these values:
 
