@@ -1,4 +1,4 @@
-FROM curity.azurecr.io/curity/idsvr:7.3.1
+FROM curity.azurecr.io/curity/idsvr:latest
 
 # Copy in multiple parameterized configuration files
 RUN rm -rf /opt/idsvr/etc/init/*.xml

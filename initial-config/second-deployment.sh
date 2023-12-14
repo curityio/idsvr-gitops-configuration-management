@@ -31,4 +31,4 @@ docker run -it -p 6749:6749 -p 8443:8443 \
 -e CONFIG_ENCRYPTION_KEY="$KEY" \
 -e ADMIN='true' \
 -v "$(pwd)/initial-config-backup.xml":/opt/idsvr/etc/init/config.xml \
-curity.azurecr.io/curity/idsvr:7.3.1
+curity.azurecr.io/curity/idsvr:latest
