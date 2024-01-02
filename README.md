@@ -18,7 +18,7 @@ You will also need a `license.json` file for the Curity Identity Server.
 
 The following resources explain the concepts and automation in further detail:
 
-- [Configuration Best Practices](https://curity.io/resources/learn/configuration-best-practices)
+- [IAM Configuration Best Practices](https://curity.io/resources/learn/iam-configuration-best-practices/)
 - [GitOps Configuration Tutorial](https://curity.io/resources/learn/gitops-configuration-management)
 
 ## Overview
