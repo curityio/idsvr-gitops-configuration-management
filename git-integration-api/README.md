@@ -19,16 +19,16 @@ This request is triggered from a post commit hook in the Curity Identity Server:
 ## Setup
 
 You need to create a GitHub repo for your user account.\
-Then update the `src/main/resources/application.properties` folder:
+Then update the values in the `src/main/resources/application.properties` file or add environment variables:
 
 ```text
-server.port=3000
-basicAuthenticationUserName=idsvr
-basicAuthenticationPassword=idsvr-secret-1
-githubBaseUrl=https://api.github.com
-githubUserAccount=
-githubAccessToken=
-githubRepositoryName=idsvr-configuration-store
+export SERVER_PORT='3000'
+export BASIC_AUTHENTICATION_USER_NAME='idsvr'
+export BASIC_AUTHENTICATION_PASSWORD='idsvr-secret-1'
+export GITHUB_BASE_URL='https://api.github.com'
+export GITHUB_USER_ACCOUNT=''
+export GITHUB_ACCESS_TOKEN=''
+export GITHUB_REPOSITORY_NAME='idsvr-configuration-store'
 ```
 
 ## Run the API

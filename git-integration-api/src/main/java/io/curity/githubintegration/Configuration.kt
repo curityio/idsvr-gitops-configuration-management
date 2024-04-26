@@ -16,45 +16,68 @@
  
 package io.curity.githubintegration
 
-import java.util.Properties
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
 /*
  * A simple configuration class that reads the application.properties file
  */
 @Configuration
+@ConfigurationProperties()
 open class Configuration {
 
-    private val properties = Properties()
-
-    init {
-        val inputStream = this.javaClass.getResourceAsStream("/application.properties")
-        inputStream.use {
-            properties.load(inputStream)
-        }
-    }
+    private var basicAuthenticationUserName: String = ""
+    private var basicAuthenticationPassword: String = ""
+    private var gitHubBaseUrl: String = ""
+    private var gitHubUserAccount: String = ""
+    private var gitHubAccessToken: String = ""
+    private var gitHubRepositoryName: String = ""
 
     fun getBasicAuthenticationUserName(): String {
-        return properties.getProperty("basicAuthenticationUserName")
+        return basicAuthenticationUserName
+    }
+
+    fun setBasicAuthenticationUserName(value: String) {
+        basicAuthenticationUserName = value
     }
 
     fun getBasicAuthenticationPassword(): String {
-        return properties.getProperty("basicAuthenticationPassword")
+        return basicAuthenticationPassword
+    }
+
+    fun setBasicAuthenticationPassword(value: String) {
+        basicAuthenticationPassword = value
     }
 
     fun getGitHubBaseUrl(): String {
-        return properties.getProperty("githubBaseUrl")
+        return gitHubBaseUrl
+    }
+
+    fun setGitHubBaseUrl(value: String) {
+        gitHubBaseUrl = value
     }
 
     fun getGitHubUserAccount(): String {
-        return properties.getProperty("githubUserAccount")
+        return gitHubUserAccount
+    }
+
+    fun setGitHubUserAccount(value: String) {
+        gitHubUserAccount = value
     }
 
     fun getGitHubAccessToken(): String {
-        return properties.getProperty("githubAccessToken")
+        return gitHubAccessToken
+    }
+
+    fun setGitHubAccessToken(value: String) {
+        gitHubAccessToken = value
     }
 
     fun getGitHubRepositoryName(): String {
-        return properties.getProperty("githubRepositoryName")
+        return gitHubRepositoryName
+    }
+
+    fun setGitHubRepositoryName(value: String) {
+        gitHubRepositoryName = value
     }
 }

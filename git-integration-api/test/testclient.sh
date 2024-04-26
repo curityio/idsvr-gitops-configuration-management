@@ -25,9 +25,8 @@ fi
 #
 # Send the request data to the API
 #
-REQUEST_CONTENT=$(cat $REQUEST_CONTENT_PATH)
 curl -i -X POST http://localhost:3000/configuration/pull-requests \
 -u "$BASIC_USER_NAME:$BASIC_PASSWORD" \
 -H "accept: application/json" \
 -H "content-type: application/json" \
--d "$REQUEST_CONTENT"
+-d "@$REQUEST_CONTENT_PATH"
