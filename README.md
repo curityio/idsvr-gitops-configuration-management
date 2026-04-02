@@ -1,5 +1,8 @@
 # GitOps Configuration Management
 
+[![Quality](https://img.shields.io/badge/quality-demo-red)](https://curity.io/resources/code-examples/status/)
+[![Availability](https://img.shields.io/badge/availability-source-blue)](https://curity.io/resources/code-examples/status/)
+
 Demonstrates some advanced techniques for managing configuration for the Curity Identity Server.\
 This provides a secure and maintainable setup that avoids duplication, with reliable change management.\
 It also eliminates most risk when adding new environments to your deployment pipeline.
